@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ad</title>
+    <style>
+        body {
+            background: <%= it.background %>;
+            text-align: center;
+        }
+
+        a:link {
+            text-decoration: inherit;
+            color: inherit;
+            cursor: auto;
+        }
+
+        a:visited {
+            text-decoration: inherit;
+            color: inherit;
+            cursor: auto;
+        }
+
+        .widthSet {
+            max-width: 280px;
+        }
+
+        .heightSet {
+            max-height: 180px;
+        }
+    </style>
+</head>
+<body>
+<% if (it.href) { %>
+<a href="<%= it.href %>" target="_top">
+    <% } %>
+    <div>
+        <h3>Ad for <%= it.adTarget %></h3>
+        <img src="<%= it.image %>" width="100%" class="widthSet heightSet" alt="Offer image">
+    </div>
+    <% if (it.href) { %>
+</a>
+<% } %>
+</body>
+</html>

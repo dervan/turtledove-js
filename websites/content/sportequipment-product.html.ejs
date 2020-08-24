@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Sport equipment- <%= it.product %></title>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background: #eae6ae;
+        }
+
+        img {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+  import { initTurtledove, InterestGroup } from "<%= it.turtledoveHost %>/turtledove.js"
+
+  initTurtledove({ logs: true, store: true })
+
+  window.navigator.leaveAdInterestGroup(new InterestGroup(window.location.host, 'bikes_viewer', ['<%= it.adPartner %>']), 2592000)
+  window.navigator.leaveAdInterestGroup(new InterestGroup(window.location.host, 'rollers_viewer', ['<%= it.adPartner %>']), 2592000)
+  window.navigator.leaveAdInterestGroup(new InterestGroup(window.location.host, 'scooters_viewer', ['<%= it.adPartner %>']), 2592000)
+  window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, '<%= it.product %>_viewer', ['<%= it.adPartner %>']), 2592000)
+</script>
+
+<div class="container centered">
+    <h3>Check out ours <%= it.product %>!</h3>
+    <div class="container">
+
+        <div class="three columns centered">
+            <h5>Black <%= it.product %></h5>
+            <img src="./static/images/<%= it.product %>.svg" alt="<%= it.product %> image"><br>
+            <button class="button-primary" >Buy!</button>
+        </div>
+        <div class="three columns centered">
+            <h5>Red <%= it.product %></h5>
+            <img src="./static/images/<%= it.product %>-red.svg" alt="<%= it.product %> image"><br>
+            <button class="button-primary" >Buy!</button>
+        </div>
+        <div class="three columns centered">
+            <h5>Red <%= it.product %></h5>
+            <img src="./static/images/<%= it.product %>-blue.svg" alt="<%= it.product %> image"><br>
+            <button class="button-primary" >Buy!</button>
+        </div>
+        <div class="three columns centered">
+            <h5>Red <%= it.product %></h5>
+            <img src="./static/images/<%= it.product %>-green.svg" alt="<%= it.product %> image"><br>
+            <button class="button-primary">Buy!</button>
+        </div>
+    </div>
+    <p>
+    <h3>
+        <a href="./">Return to main page</a>
+    </h3>
+    </p>
+</div>
+</body>
+</html>

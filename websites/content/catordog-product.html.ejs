@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CatOrDog - food for <%= it.animal %></title>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background: #8fdcc5;
+        }
+
+        .highlight {
+            border-color: #8fdcc5;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+  import { initTurtledove, InterestGroup } from "<%= it.turtledoveHost %>/turtledove.js"
+
+  function highlightParent (element) {
+    let oldValue = element.parentNode.style.borderColor
+    element.parentNode.style.borderColor = "#7db7af"
+    setTimeout(() => element.parentNode.style.borderColor = oldValue, 1000)
+  }
+
+  initTurtledove({ logs: true, store: true })
+
+  window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, 'animals_visitor', ['<%= it.adPartner %>']), 2592000)
+
+  document.getElementById("foodbuyer").addEventListener("click", (event) => {
+    window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, '<%= it.animal %>food_buyer', ['<%= it.adPartner %>']), 2592000)
+    highlightParent(event.currentTarget);
+  })
+</script>
+
+<div class="container">
+    <div class="one-half column offset-by-three centered highlight">
+        <h3>Amazing food for <%= it.animal %>s!</h3>
+        <img src="./static/images/<%= it.animal %>.svg" width="50%" alt="<%= it.animal %> image"><br>
+        <p>
+            This great food is exactly the food that <%= it.animal %>s lover should buy for their loved <%= it.animal %>
+            .
+        </p>
+        <p>
+            Click a button below to add yourself to ad interest group.
+        </p>
+        <button class="button-primary" id="foodbuyer">Buy!</button>
+        <p>
+        <h3>
+            <a href="./">Return to main page</a>
+        </h3>
+        </p>
+    </div>
+</div>
+</body>
+</html>

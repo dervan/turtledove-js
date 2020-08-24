@@ -1,0 +1,10 @@
+body {
+    overflow: hidden;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+iframe {
+    border: none;
+}

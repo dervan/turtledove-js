@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Sport equipment</title>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background: #eae6ae;
+        }
+
+        .highlight {
+            border-color: #eae6ae;
+        }
+
+        img {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<script type="module">
+  import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
+
+  initTurtledove({ logs: true })
+</script>
+<div class="container">
+    <h3>Shop with sport equipment</h3>
+    <div class="row">
+        <div class="one-third column highlight centered">
+            <a href="./scooters">
+                <h3>Scooters</h3>
+                <img src="./static/images/scooters.svg" alt="Scooter image" style="width: 50%">
+            </a>
+        </div>
+        <div class="one-third column highlight">
+            <a href="./bikes">
+                <h3>Bikes</h3>
+                <img src="./static/images/bikes.svg" alt="Bike image" style="margin-top: 40px">
+            </a>
+        </div>
+        <div class="one-third column highlight">
+            <a href="./rollers">
+                <h3>Rollers</h3>
+                <img src="./static/images/rollers.svg" alt="Roller image">
+            </a>
+        </div>
+        <div class="twelve columns">
+            <p>
+                This website is a dummy <b>advertiser</b> that is doing a simple retargeting based on TURTLEDOVE.
+                Every time someone enters a product listing it removes all InterestsGroups and adds the newest one.
+            </p>
+            <p>If you want to choose between trains and plains you should check out
+                <a href="<%= it.transportAdvertiser %>">this website</a>. Or if you'd like to choose between cats and
+                dogs you have to check out <a href="<%= it.animalsAdvertiser %>"> another site</a>.
+                Would you like to see some ads? Visit <a
+                            href="<%= it.animalsPublisher %>">a website about animals</a> or <a
+                            href="<%= it.planesPublisher %>">a website about planes</a>.
+            </p>
+            <p>
+                To check out more details about the state of TURTLEDOVE simulation on your browser you can visit its
+                <a href="<%= it.turtledoveHost %>">user interface</a>.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

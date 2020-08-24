@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TrainOrPlane</title>
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <style>
+        body {
+            background: #f2edfd;
+        }
+
+        .highlight {
+            border-color: #f2edfd;
+        }
+    </style>
+</head>
+
+<body>
+<script type="module">
+  import { initTurtledove, InterestGroup } from "<%= it.turtledoveHost %>/turtledove.js"
+
+  function highlightParent (element) {
+    let oldValue = element.parentNode.style.borderColor
+    element.parentNode.style.borderColor = "#c4a8ff"
+    setTimeout(() => element.parentNode.style.borderColor = oldValue, 1000)
+  }
+
+  initTurtledove({ logs: true, store: true })
+  document.getElementById("trainslover").addEventListener("click", (event) => {
+    window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, 'trains_lover', ['<%= it.adPartner %>']), 2592000)
+    highlightParent(event.currentTarget)
+  })
+  document.getElementById("planeslover").addEventListener("click", (event) => {
+    window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, 'planes_lover', ['<%= it.adPartner %>']), 2592000)
+    highlightParent(event.currentTarget)
+  })
+</script>
+<div class="container">
+    <h3>Do you like trains or planes?</h3>
+    <div class="row">
+        <div class="one-half column highlight">
+            <a href="javascript:{}" id="trainslover">
+                <h3>I like trains!</h3>
+                <img src="./static/images/train2.png" alt="Train image">
+            </a>
+        </div>
+        <div class="one-half column highlight">
+            <a href="javascript:{}" id="planeslover">
+                <h3>I like planes!</h3>
+                <img src="./static/images/plane.svg" alt="Plane image">
+            </a>
+        </div>
+        <div class="twelve columns">
+            <p>
+                This website is a dummy <b>advertiser</b> that shows some external ads basing on the collected information.
+            </p>
+            <p>If you want to choose between cats and dogs, you have to check out <a href="<%= it.animalsAdvertiser %>">this
+                    website</a>.
+                Or you can visit <a href="<%= it.sportEquipmentAdvertiser %>">a sports shop.</a>
+                Would you like to see some ads? Visit a website about <a href="<%= it.animalsPublisher %>">animals</a> or <a href="<%= it.planesPublisher %>">planes</a>. </p>
+            <p>
+                To check out more details about the  state of TURTLEDOVE simulation on your browser, you can visit its
+                <a href="<%= it.turtledoveHost %>">user interface</a>.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

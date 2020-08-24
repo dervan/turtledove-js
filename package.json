@@ -1,0 +1,34 @@
+{
+  "name": "turtledove-js",
+  "description": "TURTLEDOVE implementation and examples",
+  "main": "turtledove-server/turtledove-server.js",
+  "scripts": {
+    "start": "concurrently \"nodemon ad-network/ad-network.js\" \"nodemon turtledove-server/turtledove-server.js\" \"nodemon websites/websites.js\"",
+    "deploy": "concurrently \"node ad-network/ad-network.js prod\" \"node turtledove-server/turtledove-server.js prod\" \"node websites/websites.js prod\"",
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dervan/turtledove-js",
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "concurrently": "^5.2.0",
+    "cors": "^2.8.5",
+    "eta": "^1.2.2",
+    "express": "^4.17.1",
+    "nodemo": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "nodemon": "^2.0.4",
+    "standard": "^14.3.4"
+  },
+  "standard": {
+    "ignore": [
+      "ad-network/content/static/bidding-function.js"
+    ]
+  }
+}

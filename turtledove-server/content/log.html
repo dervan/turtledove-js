@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TURTLEDOVE demo logs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="static/css/normalize.css">
+    <link rel="stylesheet" href="static/css/skeleton.css">
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: none;
+            color: whitesmoke;
+            font-size: 1.5em;
+            font-family: monospace;
+            border-radius: 2px;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            height: 100%;
+        }
+
+        thead {
+            position: fixed;
+        }
+
+        tbody {
+            height: 100vh;
+            display: block;
+            overflow: auto;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        td, th {
+            padding: 1px;
+            padding-left: 20px;
+            border-color: black;
+        }
+
+        .time {
+            width: 16em;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tbody id="logs">
+    <tr>
+        <th class="time">Time</th>
+        <th>Website</th>
+        <th>Log</th>
+    </tr>
+    </tbody>
+</table>
+<script>
+  const logsKey = 'logs'
+  const logStateKey = 'logState'
+
+  function insertLogs (logs) {
+    const logsTable = document.getElementById(logsKey)
+    for (const logEntry of logs) {
+      const row = logsTable.insertRow()
+      const time = row.insertCell()
+      time.className = 'time'
+      time.innerHTML = logEntry.ts
+      const site = row.insertCell()
+      site.innerText = logEntry.site
+      const logText = row.insertCell()
+      logText.innerText = logEntry.val
+      logsTable.scrollTop = logsTable.scrollHeight
+    }
+  }
+
+  insertLogs(JSON.parse(window.localStorage.getItem(logsKey)) || [])
+  window.onmessage = (messageEvent) => {
+    const request = messageEvent.data
+    if (request.type === 'load') {
+      messageEvent.source.postMessage(JSON.parse(window.localStorage.getItem(logStateKey)), messageEvent.origin)
+    } else if (request.type === 'hide') {
+      let state = JSON.parse(window.localStorage.getItem(logStateKey))
+      state.hidden = true
+      window.localStorage.setItem(logStateKey, JSON.stringify(state))
+    } else if (request.type === 'show') {
+      let state = JSON.parse(window.localStorage.getItem(logStateKey)) || {}
+      state.hidden = false
+      window.localStorage.setItem(logStateKey, JSON.stringify(state))
+    } else if (request.type === 'store') {
+      let state = request.value
+      state.hidden = false
+      window.localStorage.setItem(logStateKey, JSON.stringify(state))
+    } else if (request.type === 'update') {
+      let newLogs = request.value
+      insertLogs(newLogs)
+      let savedLogs = JSON.parse(window.localStorage.getItem(logsKey)) || []
+      window.localStorage.setItem(logsKey, JSON.stringify(savedLogs.concat(newLogs)))
+    }
+  }
+</script>
+</body>
+</html>

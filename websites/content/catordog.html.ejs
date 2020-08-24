@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CatOrDog</title>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background: #8fdcc5;
+        }
+
+        .highlight {
+            border-color: #8fdcc5;
+        }
+    </style>
+</head>
+
+<body>
+<script type="module">
+  import { initTurtledove, InterestGroup } from "<%= it.turtledoveHost %>/turtledove.js"
+
+  function highlightParent (element) {
+    let oldValue = element.parentNode.style.borderColor;
+    element.parentNode.style.borderColor = "#7db7af";
+    setTimeout(() => element.parentNode.style.borderColor = oldValue, 1000);
+  }
+
+  initTurtledove({ logs: true, store: true })
+
+  const visitorGroup = new InterestGroup(window.location.host, 'animals_visitor', ['<%= it.adPartner %>'])
+  window.navigator.joinAdInterestGroup(visitorGroup, 2592000)
+  document.getElementById("catlover").addEventListener("click", (event) => {
+    window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, 'cats_lover', ['<%= it.adPartner %>']), 2592000);
+    highlightParent(event.currentTarget);
+  });
+  document.getElementById("doglover").addEventListener("click", (event) => {
+    window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, 'dogs_lover', ['<%= it.adPartner %>']), 2592000);
+    highlightParent(event.currentTarget);
+  });
+</script>
+<div class="container">
+    <h3>Do you like cats or dogs?</h3>
+    <div class="row">
+        <div class="one-half column highlight">
+            <a href="javascript:{}" id="catlover">
+                <h3>I like cats!</h3>
+                <img src="./static/images/cat.svg" alt="Cat image">
+            </a>
+        </div>
+        <div class="one-half column highlight">
+            <a href="javascript:{}" id="doglover">
+                <h3>I like dogs!</h3>
+                <img src="./static/images/dog.svg" alt="Dog image">
+            </a>
+        </div>
+        <div class="twelve columns">
+            <p>
+                This website is a dummy <b>advertiser</b> that shows its ads based on the previously collected information.
+            </p>
+            <p>If you want to choose between trains and plains you should check out <a
+                        href="<%= it.transportAdvertiser %>">this website</a>.
+                Or you can visit <a href="<%= it.sportEquipmentAdvertiser %>">a sports shop</a>.
+                Would you like to see some ads? Visit a website about  <a
+                        href="<%= it.animalsPublisher %>">animals</a> or <a
+                        href="<%= it.planesPublisher %>">planes</a>.
+            </p>
+            <p>
+                To check out more details about the state of TURTLEDOVE simulation on your browser, you can visit its
+                <a href="<%= it.turtledoveHost %>">user interface</a>.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

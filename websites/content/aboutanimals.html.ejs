@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>About animals</title>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background-image: url('./static/images/eagle-background.png');
+            background-repeat: repeat;
+            background-size: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="one-half column">
+            <h3>Website about animals</h3>
+            <p>Our website uses only privacy-first online advertising
+                with the usage of state-of-the-art TURTLEDOVE ads.</p>
+            <p>
+                We've included iframes marked with class <samp>td-demo-ad</samp>. Later the script
+                <code><b>turtledove.js</b></code> that simulates future TURTLEDOVE API initializes them with some
+                personalized ads. Check the website source to see more details!
+            </p>
+            <p>
+                This website doesn't include denied terms for ads, but because of the topic of the site, ad providers
+                will value more ads about animals.
+            </p>
+            <iframe id="td-ad-left" class="td-demo-ad" scrolling="no" width="300" height="250">
+            </iframe>
+        </div>
+        <div class="one-half column">
+            <p>This website is an example <b>publisher</b> that identifies itself as a website about animals.</p>
+            <p>Would you like to see more ads? Check out a website about <a href="<%= it.planesPublisher %>">planes</a>
+                to check out how denied terms list works.</p>
+            <p>You can also generate more ads by visiting a website where you can decide if you like
+                <a href="<%= it.animalsAdvertiser %>">cats or dogs</a>
+                and by saying that you like <a href="<%= it.transportAdvertiser %>">planes or trains</a> or by going
+                to <a href="<%= it.sportEquipmentAdvertiser %>">a sports shop</a>.
+            </p>
+            <iframe id="td-ad-right" class="td-demo-ad" scrolling="no" width="300" height="250">
+            </iframe>
+            <p>
+                To check out more details about the state of TURTLEDOVE simulation on your browser you can visit its
+                <a href="<%= it.turtledoveHost %>">user interface</a>.
+            </p>
+        </div>
+    </div>
+</div>
+<script type="module">
+  import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
+  import { ContextBidRequest, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
+
+  initTurtledove({ logs: true, adIframes: ['td-ad-left', 'td-ad-right'] })
+  window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextBidRequest('animals', new Placement('left')) })
+  window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextBidRequest('animals', new Placement('right')) })
+</script>
+</body>
+</html>
