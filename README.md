@@ -8,15 +8,11 @@ To use our implementation just import a file `turtledove.js` and call `initTurtl
 ```
 import { initTurtledove } from "https://turtledove.pl/turtledove.js"
 
-const config = {store: true, adIframes: ['ad-iframe-id'], logs: false}
-
-initTurtledove(config)
+initTurtledove({ logs: true })
 ```
 
-Config object can have three keys:
-- `store` - set to `true` or `false` states if you want to add an iframe with data store - what you should want to do if you're going to add a user to some `AdInterestGroup`
-- `adIframes` - a list of iframes ids where you want to show a TURTLEDOVE ad
-- `logs`- set to `true` or `false`, adds a button to open a message log that gives a bit of insight into implementation internals.
+Initializing function consumes a config object which recognizes one key:
+- `logs`- if set to `true`, adds a button to open a message log that gives a bit of insight into implementation internals.
 
 Calling `initTurtledove` overwrites functions `window.navigator.renderAds`, `window.navigator.joinAdInterestGroup` and `window.navigator.leaveAdInterestGroup`, that in the future would be provided by a browser.
 
@@ -44,7 +40,7 @@ TURTLEDOVE ads can be seen in two example publishers:
 
 ## Advertisers
 We wrote three web pages that are creating AdInterestGroups:
-- https://sportequipment.pl - a shop which is performing naive retargeting by showing only last viewed categories.
+- https://sportequipment.pl - a shop which is performing naive retargeting by showing ads only for last viewed category.
 - https://catordog.pl - an advertiser that asks you if you like cats or dogs and afterward shows you its ads promoting
 either cat or dog food. If you didn't declare anything, it will show you a generic ad for its visitors. Quite the opposite,
 if you click on an ad and then buy food, then you will see higher valued ads for food buyers.
@@ -60,13 +56,13 @@ Note, that an interface between publishers and the ad network is completely arbi
 4. Check both https://aboutplanes.pl and https://aboutanimals.pl. The bike-related ad will not show on a website about planes. You can go now to https://turtledove.pl and check the bidding function of the ad for bikes_viewer and context signals of auctions that were performed on both websites - that will explain why winners differ in both auctions.
 5. Go to the https://sportequipment.pl and this time list rollers.
 6. Check both https://aboutplanes.pl and https://aboutanimals.pl. Now rollers ad should be everywhere (excluding the best context spot on the right side of aboutplanes.pl), as it is quite valuable and not denied on any site.
-7. Go to the https://turtledove.pl and check out that the bikes ad were removed when rollers ad appeared.
+7. Go to the https://turtledove.pl and check out that the bikes ad was removed when rollers ad appeared.
 8. Go to https://catordog.pl and select the kind of pets that you like.
-9. Once again see both https://aboutplanes.pl and https://aboutanimals.pl. This time animals-related ads should be shown an aboutanimals.pl, as they are the best fit for the site topic.
+9. Once again see both https://aboutplanes.pl and https://aboutanimals.pl. This time animals-related ads should be shown at aboutanimals.pl, as they are the best fit for the site topic.
 10. Assume you don't like an ad for cat/dog lovers. Hover over a small question mark at the top of an ad iframe, read the description, and remove this ad. Refresh a website to check if it vanished indeed.
 
 # Open issues / comments
-- This implementation is a continuously developed **unofficial** prototype. It is not the reference implementation, we just built that to get a better understanding of how future changes will affect the advertising business.
+- This simulation is a continuously developed **unofficial** prototype. It is not the reference implementation, we just built that to get a better understanding of how future changes will affect the advertising business.
 - The base of our demo is localStorage. We use that because it's what we have access to. Maybe in the future, it will not be available but hopefully, at the same time, proper TURTLEDOVE will be. **Users who have disabled localStorage in the browser will not be able to use this demo.**
 - We are fetching ads exactly in the time joining AdInterestGroup. It will not be the case in TURTLEDOVE, but for our demo, it's very handy simplification.
 - Our iframes are just plain old-school iframes versus fancy fenced iframes that probably will be used in final implementation (see https://github.com/shivanigithub/fenced-frame)

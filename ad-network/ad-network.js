@@ -40,7 +40,6 @@ async function fetchContextBid (contextBidRequest) {
 }
 
 app.get('/fetch-ads', async (req, res) => {
-  console.log(req.query)
   res.json(await fetchAds(decodeURIComponent(req.query.interest_group)))
 })
 app.post('/fetch-context-bid', async (req, res) => res.json(await fetchContextBid(req.body)))

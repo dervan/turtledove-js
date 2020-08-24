@@ -29,7 +29,7 @@
             </p>
             <p>
                 This website, in contrast to the other, has a brand-safety policy - it doesn't like ads with other means
-                of transport than planes - so trains ads will not display even if they are more valuable.
+                of transport than planes - so trains or bikes ads will not display even if they are more valuable.
             </p>
             <iframe id="td-ad-left" class="td-demo-ad" scrolling="no" width="300" height="250">
             </iframe>
@@ -56,11 +56,11 @@
 </div>
 <script type="module">
   import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
-  import { ContextBidRequest, AdPolicy, Placement } from "<%= it.adPartner %>/static/ad-network-api.js";
+  import { ContextBidRequest, AdPolicy, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
 
-  const adPolicy = new AdPolicy(['ship', 'train', 'car', 'bike']);
+  const adPolicy = new AdPolicy(['ship', 'train', 'car', 'bike'])
 
-  initTurtledove({ logs: true, adIframes: ['td-ad-left', 'td-ad-right'] })
+  initTurtledove({ logs: true })
   window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextBidRequest('planes', new Placement('left'), adPolicy) })
   window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextBidRequest('planes', new Placement('right'), adPolicy) })
 </script>

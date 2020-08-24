@@ -56,7 +56,7 @@
   import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
   import { ContextBidRequest, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
 
-  initTurtledove({ logs: true, adIframes: ['td-ad-left', 'td-ad-right'] })
+  initTurtledove({ logs: true })
   window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextBidRequest('animals', new Placement('left')) })
   window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextBidRequest('animals', new Placement('right')) })
 </script>

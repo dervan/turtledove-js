@@ -27,7 +27,7 @@
     setTimeout(() => element.parentNode.style.borderColor = oldValue, 1000);
   }
 
-  initTurtledove({ logs: true, store: true })
+  initTurtledove({ logs: true })
 
   const visitorGroup = new InterestGroup(window.location.host, 'animals_visitor', ['<%= it.adPartner %>'])
   window.navigator.joinAdInterestGroup(visitorGroup, 2592000)

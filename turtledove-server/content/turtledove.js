@@ -12,8 +12,6 @@ import { RenderingRequest, StoreRequest } from './static/iframe-api.js'
 const tdDemoAddress = '<%= it.turtledoveHost %>'
 const storeIframeId = 'td-demo-store'
 let storeInitialized = false
-let adsInitialized = false
-let initializedAdIframes = []
 let logsEnabled = false
 let logsReady = false
 
@@ -29,26 +27,6 @@ function addStoreIframe () {
     storeInitialized = true
   }
   document.body.appendChild(iframe)
-}
-
-/**
- * Sets source of ad iframes to turtledove address that is performing an auction.
- * @param adIframeIds list of iframes to initialize
- */
-function initAdIframes (adIframeIds) {
-  let loadedIframes = 0
-  const iframesCount = adIframeIds.length
-  for (const iframeId of adIframeIds) {
-    const iframe = document.getElementById(iframeId)
-    iframe.src = tdDemoAddress + '/tdbid'
-    iframe.onload = () => {
-      loadedIframes += 1
-      if (loadedIframes === iframesCount) {
-        adsInitialized = true
-        initializedAdIframes = adIframeIds
-      }
-    }
-  }
 }
 
 /**
@@ -78,12 +56,18 @@ function joinAdInterestGroup (group, membershipTimeout) {
  * context bid request for it (custom object, as specified by ad partner)
  */
 function renderAds (iframeId, contextBidRequests) {
-  if (initializedAdIframes.find(it => it === iframeId) < 0) {
-    console.error(`Iframe ${iframeId} was not initialized during 'initTurtledove' call!`)
-  }
+  const renderingRequest = new RenderingRequest(contextBidRequests, logsEnabled)
+  const turtledoveBidSrc = tdDemoAddress + '/tdbid'
   const ad = document.getElementById(iframeId)
-  if (ad?.contentWindow !== null) {
-    ad.contentWindow.postMessage(new RenderingRequest(contextBidRequests, logsEnabled), tdDemoAddress)
+  if (ad === null) {
+    console.error(`There is no iframe with id ${iframeId}!`)
+    return
+  }
+  if (ad.contentWindow !== null && ad.src === turtledoveBidSrc) {
+    ad.contentWindow.postMessage(renderingRequest, tdDemoAddress)
+  } else {
+    ad.onload = () => ad.contentWindow.postMessage(renderingRequest, tdDemoAddress)
+    ad.src = turtledoveBidSrc
   }
 }
 
@@ -91,11 +75,8 @@ function renderAds (iframeId, contextBidRequests) {
  * Initializes a demo of TURTLEDOVE. Allows to call currently unavailable methods
  * of Navigator that in the future will be a part of browser API.
  *
- * @param options - dict that allows to configure TURTLEDOVE simulation. It checks three keys:
+ * @param options - dict that allows to configure TURTLEDOVE simulation. Currently it accepts only one key:
  *                * logs: boolean - if set to true adds an turtledove icon and a log that shows last TURTLEDOVE demo actions
- *                * adIframes: [string] - if an initializing website wants to render ads it is necessary to add ids of those
- *                in this parameter (demo code needs to set up those iframes before ad rendering).
- *                * store: boolean - if set to true adds to the website an invisible iframe with turtledove store.
  */
 export function initTurtledove (options) {
   if (options.logs) {
@@ -105,17 +86,12 @@ export function initTurtledove (options) {
   } else {
     logsReady = true
   }
-  if (options.adIframes) {
-    initAdIframes(options.adIframes)
-  }
-  if (options.store) {
-    addStoreIframe()
-  }
+  addStoreIframe()
 
   // "retry" wrapper retries a function if given condition is not true - here it means "retry if iframes are not loaded"
-  window.navigator.renderAds = retry(renderAds, () => (adsInitialized && logsReady), 10, 300)
-  window.navigator.joinAdInterestGroup = retry(joinAdInterestGroup, () => (storeInitialized && logsReady), 10, 300)
-  window.navigator.leaveAdInterestGroup = retry(leaveAdInterestGroup, () => (storeInitialized && logsReady), 10, 300)
+  window.navigator.renderAds = retry(renderAds, () => logsReady, 20, 100)
+  window.navigator.joinAdInterestGroup = retry(joinAdInterestGroup, () => (storeInitialized && logsReady), 20, 100)
+  window.navigator.leaveAdInterestGroup = retry(leaveAdInterestGroup, () => (storeInitialized && logsReady), 20, 100)
 }
 
 /**

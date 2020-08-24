@@ -23,16 +23,16 @@
 
   function highlightParent (element) {
     let oldValue = element.parentNode.style.borderColor
-    element.parentNode.style.borderColor = "#c4a8ff"
+    element.parentNode.style.borderColor = '#c4a8ff'
     setTimeout(() => element.parentNode.style.borderColor = oldValue, 1000)
   }
 
-  initTurtledove({ logs: true, store: true })
-  document.getElementById("trainslover").addEventListener("click", (event) => {
+  initTurtledove({ logs: true })
+  document.getElementById('trainslover').addEventListener('click', (event) => {
     window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, 'trains_lover', ['<%= it.adPartner %>']), 2592000)
     highlightParent(event.currentTarget)
   })
-  document.getElementById("planeslover").addEventListener("click", (event) => {
+  document.getElementById('planeslover').addEventListener('click', (event) => {
     window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, 'planes_lover', ['<%= it.adPartner %>']), 2592000)
     highlightParent(event.currentTarget)
   })
@@ -54,14 +54,16 @@
         </div>
         <div class="twelve columns">
             <p>
-                This website is a dummy <b>advertiser</b> that shows some external ads basing on the collected information.
+                This website is a dummy <b>advertiser</b> that shows some external ads basing on the collected
+                information.
             </p>
             <p>If you want to choose between cats and dogs, you have to check out <a href="<%= it.animalsAdvertiser %>">this
                     website</a>.
                 Or you can visit <a href="<%= it.sportEquipmentAdvertiser %>">a sports shop.</a>
-                Would you like to see some ads? Visit a website about <a href="<%= it.animalsPublisher %>">animals</a> or <a href="<%= it.planesPublisher %>">planes</a>. </p>
+                Would you like to see some ads? Visit a website about <a href="<%= it.animalsPublisher %>">animals</a>
+                or <a href="<%= it.planesPublisher %>">planes</a>. </p>
             <p>
-                To check out more details about the  state of TURTLEDOVE simulation on your browser, you can visit its
+                To check out more details about the state of TURTLEDOVE simulation on your browser, you can visit its
                 <a href="<%= it.turtledoveHost %>">user interface</a>.
             </p>
         </div>
