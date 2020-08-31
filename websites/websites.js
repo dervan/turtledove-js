@@ -43,7 +43,7 @@ catOrDog.listen(ports.animalsAdvertiserPort,
 
 const sportEquipment = express()
 sportEquipment.get('/', async (req, res) => res.send(await getRenderedHtml('sportequipment.html.ejs', addresses)))
-for (const product of ['scooters', 'bikes', 'rollers']) {
+for (const product of ['scooters', 'bikes', 'rollerblades']) {
   sportEquipment.get('/' + product, async (req, res) => res.send(await getRenderedHtml('sportequipment-product.html.ejs', {
     ...addresses,
     product: product

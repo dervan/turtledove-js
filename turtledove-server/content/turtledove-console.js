@@ -2,7 +2,7 @@ import interact from 'https://cdn.jsdelivr.net/npm/@interactjs/interactjs/index.
 
 const consoleIconId = 'td-console-icon'
 const resizeOverlayId = 'td-console-overlay'
-const logIframeId = 'td-console'
+const consoleIframeId = 'td-console'
 const tdDemoAddress = '<%= it.turtledoveHost %>'
 
 const consoleCss = '#td-console {\n' +
@@ -70,7 +70,7 @@ function checkSelection () {
   }
 }
 
-interact('#' + logIframeId)
+interact('#' + consoleIframeId)
   .resizable({
     // resize from all edges and corners
     edges: { left: true, right: true, bottom: false, top: true },
@@ -144,7 +144,7 @@ interact('#' + logIframeId)
   })
 
 function toggleLogConsole () {
-  const foundLog = document.getElementById(logIframeId)
+  const foundLog = document.getElementById(consoleIframeId)
   if (foundLog) {
     if (foundLog.style?.visibility === 'visible') {
       foundLog.style.visibility = 'hidden'
@@ -167,17 +167,17 @@ function enableLog (callback) {
   document.head.appendChild(consoleStyle)
 
   const icon = document.createElement('img')
-  icon.src = tdDemoAddress + '/static/tdq.png'
+  icon.src = tdDemoAddress + '/static/images/turtledove-question-mark.png'
   icon.id = consoleIconId
   setInterval(() => {
-    if (document.getElementById(logIframeId)?.style?.visibility !== 'visible') { icon.style.backgroundColor = 'rgba(255,94,25,0.6)' }
+    if (document.getElementById(consoleIframeId)?.style?.visibility !== 'visible') { icon.style.backgroundColor = 'rgba(255,94,25,0.6)' }
   }, 4000)
   setTimeout(() => setInterval(() => { icon.style.backgroundColor = 'rgba(0,0,0,0)' }, 4000), 2000)
   icon.onclick = toggleLogConsole
 
   const iframe = document.createElement('iframe')
-  iframe.src = tdDemoAddress + '/log'
-  iframe.id = logIframeId
+  iframe.src = tdDemoAddress + '/console'
+  iframe.id = consoleIframeId
   iframe.style.visibility = 'hidden'
   document.body.appendChild(iframe)
   document.body.appendChild(icon)
@@ -212,19 +212,6 @@ function enableLog (callback) {
       window.removeEventListener('message', this)
     }
   })
-
-  // pass received logs to the logging iframe
-  window.addEventListener('message', (event) => {
-    if (event.origin === tdDemoAddress && event.data?.logs) {
-      const iframe = document.getElementById(logIframeId)
-      if (iframe?.contentWindow !== null) {
-        iframe.contentWindow.postMessage({
-          type: 'update',
-          value: event.data.logs
-        }, tdDemoAddress)
-      }
-    }
-  }, false)
 }
 
 export { enableLog }

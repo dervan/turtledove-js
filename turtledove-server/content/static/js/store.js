@@ -1,20 +1,8 @@
-import {
-  activePartnersKey,
-  fetchedAdsStorageKeyPrefix,
-  interestGroupsStorageKey,
-  Logger,
-  testLocalStorageAvailability
-} from './common.js'
+import { activePartnersKey, fetchedAdsStorageKeyPrefix, interestGroupsStorageKey } from './storage-keys.js'
+
+import { getInterestGroupId, Logger, testLocalStorageAvailability } from './common.js'
 
 /* eslint-env browser */
-
-/**
- * Get a string that will be an identifier of this InterestGroup.
- * @param {InterestGroup} interestGroup
- */
-function getInterestGroupId (interestGroup) {
-  return `${interestGroup.owner}_${interestGroup.name}`
-}
 
 /**
  * Saves given group in window.localStorage. All interest groups are stored under the same key.
@@ -140,7 +128,7 @@ window.onmessage = function (messageEvent) {
   const storeRequest = messageEvent.data
   const interestGroup = storeRequest.interestGroup
 
-  const logger = new Logger(messageEvent, storeRequest.loggingEnabled)
+  const logger = new Logger(messageEvent.origin, storeRequest.loggingEnabled)
 
   if (storeRequest.type === 'store') {
     storeInterestGroup(interestGroup, storeRequest.membershipTimeout, logger)
@@ -151,6 +139,6 @@ window.onmessage = function (messageEvent) {
     removeAds(interestGroup, logger)
     updateActivePartners([])
   }
-  logger.send()
+  logger.save()
 }
 testLocalStorageAvailability()

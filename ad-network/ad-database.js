@@ -59,10 +59,10 @@ function prepareAdData () {
         href: addresses.sportEquipmentAdvertiser + '/bikes',
         baseValue: 0.9
       },
-    rollers_viewer:
+    rollerblades_viewer:
       {
-        img: addresses.sportEquipmentAdvertiser + '/static/images/rollers.svg',
-        href: addresses.sportEquipmentAdvertiser + '/rollers',
+        img: addresses.sportEquipmentAdvertiser + '/static/images/rollerblades.svg',
+        href: addresses.sportEquipmentAdvertiser + '/rollerblades',
         baseValue: 1.1
       }
 
