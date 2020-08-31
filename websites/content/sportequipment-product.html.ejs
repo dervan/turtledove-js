@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Sport equipment- <%= it.product %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="./static/css/complete.css">
     <link rel="icon" type="image/png" href="./static/images/favicon.png">
@@ -23,7 +24,7 @@
   initTurtledove({ logs: true })
 
   window.navigator.leaveAdInterestGroup(new InterestGroup(window.location.host, 'bikes_viewer', ['<%= it.adPartner %>']), 2592000)
-  window.navigator.leaveAdInterestGroup(new InterestGroup(window.location.host, 'rollers_viewer', ['<%= it.adPartner %>']), 2592000)
+  window.navigator.leaveAdInterestGroup(new InterestGroup(window.location.host, 'rollerblades_viewer', ['<%= it.adPartner %>']), 2592000)
   window.navigator.leaveAdInterestGroup(new InterestGroup(window.location.host, 'scooters_viewer', ['<%= it.adPartner %>']), 2592000)
   window.navigator.joinAdInterestGroup(new InterestGroup(window.location.host, '<%= it.product %>_viewer', ['<%= it.adPartner %>']), 2592000)
 </script>
@@ -35,22 +36,18 @@
         <div class="three columns centered">
             <h5>Black <%= it.product %></h5>
             <img src="./static/images/<%= it.product %>.svg" alt="<%= it.product %> image"><br>
-            <button class="button-primary">Buy!</button>
         </div>
         <div class="three columns centered">
             <h5>Red <%= it.product %></h5>
             <img src="./static/images/<%= it.product %>-red.svg" alt="<%= it.product %> image"><br>
-            <button class="button-primary">Buy!</button>
         </div>
         <div class="three columns centered">
-            <h5>Red <%= it.product %></h5>
+            <h5>Blue <%= it.product %></h5>
             <img src="./static/images/<%= it.product %>-blue.svg" alt="<%= it.product %> image"><br>
-            <button class="button-primary">Buy!</button>
         </div>
         <div class="three columns centered">
-            <h5>Red <%= it.product %></h5>
+            <h5>Green <%= it.product %></h5>
             <img src="./static/images/<%= it.product %>-green.svg" alt="<%= it.product %> image"><br>
-            <button class="button-primary">Buy!</button>
         </div>
     </div>
     <p>

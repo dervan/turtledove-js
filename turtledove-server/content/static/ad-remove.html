@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TURTLEDOVE demo UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/normalize.css">
+    <link rel="stylesheet" href="./static/css/skeleton.css">
+    <style>
+        body {
+            background: rgba(0.1, 0.1, 0.1, 0.05);
+        }
+
+        .container {
+            margin-top: 5%;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+  import { removeAd } from './static/js/user-interface.js'
+  import { Logger } from './static/js/common.js'
+
+  let firstArg = window.location.search.substr(1)
+  if (firstArg.startsWith('id=')) {
+    const id = firstArg.substring(3)
+    let logger = new Logger(window.location.protocol + '//' + window.location.host, true, false)
+    logger.log('Remove ad with id ' + id)
+    removeAd(id)
+  }
+</script>
+<div class="container">
+    <h1>Ad removed!</h1>
+    <p>It will not show again.</p>
+</div>
+</body>
+</html>

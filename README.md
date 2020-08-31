@@ -25,7 +25,7 @@ Besides reading logs you may find it helpful to open developer tools in the brow
 
 ## Turtledove server
 This is the central part of the demo, hosted on the Internet at https://turtledove.pl. It serves a _turtledove.js_ file containing functions that in the future will be browser's API.
-It also hosts addresses _/tdstore_ and _/tdbid_ that are the source of iframes that are, respectively, saving ad interest groups or performing on-device auction of private ads.
+It also hosts addresses _/store_ and _/render-ad_ that are the source of iframes that are, respectively, saving ad interest groups or performing on-device auction of private ads.
 
 The last function of the turtledove server is exposing a set of files to add a console with a log of TURTLEDOVE events, and a simple user interface available on the main page http://turtledove.pl (such a panel also will be a part of the browser in the future).
 
@@ -54,9 +54,9 @@ Note, that an interface between publishers and the ad network is completely arbi
 2. Enter https://aboutplanes.pl and see context ads (you were not added to any group yet). To get the better insight you can also open a console by clicking on a question mark with a turtledove on it in the top-right corner and read what just happened.
 3. Go to the https://sportequipment.pl and check out bikes page.
 4. Check both https://aboutplanes.pl and https://aboutanimals.pl. The bike-related ad will not show on a website about planes. You can go now to https://turtledove.pl and check the bidding function of the ad for bikes_viewer and context signals of auctions that were performed on both websites - that will explain why winners differ in both auctions.
-5. Go to the https://sportequipment.pl and this time list rollers.
-6. Check both https://aboutplanes.pl and https://aboutanimals.pl. Now rollers ad should be everywhere (excluding the best context spot on the right side of aboutplanes.pl), as it is quite valuable and not denied on any site.
-7. Go to the https://turtledove.pl and check out that the bikes ad was removed when rollers ad appeared.
+5. Go to the https://sportequipment.pl and this time list rollerblades.
+6. Check both https://aboutplanes.pl and https://aboutanimals.pl. Now rollerblades ad should be everywhere (excluding the best context spot on the right side of aboutplanes.pl), as it is quite valuable and not denied on any site.
+7. Go to the https://turtledove.pl and check out that the bikes ad was removed when rollerblades ad appeared.
 8. Go to https://catordog.pl and select the kind of pets that you like.
 9. Once again see both https://aboutplanes.pl and https://aboutanimals.pl. This time animals-related ads should be shown at aboutanimals.pl, as they are the best fit for the site topic.
 10. Assume you don't like an ad for cat/dog lovers. Hover over a small question mark at the top of an ad iframe, read the description, and remove this ad. Refresh a website to check if it vanished indeed.

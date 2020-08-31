@@ -5,8 +5,8 @@
     <title>TURTLEDOVE demo UI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="static/css/normalize.css">
-    <link rel="stylesheet" href="static/css/skeleton.css">
+    <link rel="stylesheet" href="./static/css/normalize.css">
+    <link rel="stylesheet" href="./static/css/skeleton.css">
     <style>
         body {
             background: #ebdcff;
@@ -27,13 +27,27 @@
         table, th, td {
             border: 1px solid black;
         }
+
+        button {
+            margin: 10px;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.11.0/beautify.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.11.0/beautify-css.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.11.0/beautify-html.js"></script>
 </head>
 <body>
-<script src="static/turtledove-ui.js"></script>
+<script type="module">
+  import { removeFetchedAds, removeWinnersHistory, removeLogs, restartConsole } from './static/js/user-interface.js'
+
+  document.getElementById('clean-button').onclick = () => {
+    removeFetchedAds()
+    removeWinnersHistory()
+    removeLogs()
+    restartConsole()
+    location.reload()
+  }
+</script>
 <div class="container" style="margin-top: 5%">
     <h1>TURTLEDOVE demo UI</h1>
     <p>
@@ -44,9 +58,7 @@
     </p>
     <h2>Data reset</h2>
     <p>If you want to delete all data from demo local storage, use this button:</p>
-    <button class="button-primary" onclick="removeFetchedAds();removeWinnersHistory();removeLogs();restartConsole();location.reload();">
-        Clean data
-    </button>
+    <button class="button-primary" id="clean-button">Clean data</button>
     <h2>Fetched ads</h2>
     <p>
         All ads fetched because of joining an interest group:
@@ -57,11 +69,13 @@
             <th>Ad id</th>
             <th>Ad</th>
             <th>Bidding function</th>
-            <th>User group signals</th>
+            <th>Interest group signals</th>
         </tr>
         </thead>
     </table>
-    <script>
+    <script type="module">
+      import { removeAd, listAds } from './static/js/user-interface.js'
+
       const formatterOptions = {
         'indent_size': '4',
         'indent_char': ' ',
@@ -82,26 +96,32 @@
         'indent_empty_lines': false
       }
       const table = document.getElementById('fetched-ads')
+
       for (const adDescription of listAds()) {
         const row = table.insertRow()
         const groupId = row.insertCell()
-        groupId.innerHTML =
-          `Group ID:<br/>
+        groupId.innerHTML = `Group ID:<br/>
                  <b>${adDescription.groupId}</b><br/>
                  Ad partner: <br/>
-                 ${adDescription.adPartner}<br/>
-                 <p><button class="button" style="margin: 10px" onclick="removeAd('${adDescription.groupId}');window.location.reload();">Remove</button></p>`
-        const ad = row.insertCell()
+                 ${adDescription.adPartner}<br/>`
+        let adRemoveButton = document.createElement('button')
+        adRemoveButton.textContent = 'Remove'
+        adRemoveButton.onclick = () => {
+          removeAd(adDescription.groupId)
+          window.location.reload()
+        }
+        groupId.appendChild(adRemoveButton)
         const iframe = document.createElement('iframe')
         iframe.srcdoc = adDescription.fetchedAd.iframeContent
         iframe.height = '250px'
         iframe.width = '300px'
         iframe.scrolling = 'no'
+        const ad = row.insertCell()
         ad.appendChild(iframe)
         const bidFunction = row.insertCell()
         bidFunction.innerHTML = '<pre>' + js_beautify(adDescription.fetchedAd.bidFunction, formatterOptions) + '</pre>'
-        const ugSginals = row.insertCell()
-        ugSginals.innerHTML = '<pre>' + js_beautify(JSON.stringify(adDescription.fetchedAd.interestGroupSignals)) + '</pre>'
+        const ugSignals = row.insertCell()
+        ugSignals.innerHTML = '<pre>' + js_beautify(JSON.stringify(adDescription.fetchedAd.interestGroupSignals)) + '</pre>'
       }
     </script>
 
@@ -120,7 +140,9 @@
         </tr>
         </thead>
     </table>
-    <script>
+    <script type="module">
+      import { listWinners } from './static/js/user-interface.js'
+
       const winnersTable = document.getElementById('winners-ads')
       for (const winner of listWinners()) {
         const row = winnersTable.insertRow()

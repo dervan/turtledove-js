@@ -1,5 +1,5 @@
 const { AdParams } = require('./ad-params')
-const { ContextAd } = require('../turtledove-server/content/static/ad-partner-classes')
+const { ContextAd } = require('../turtledove-server/content/static/js/ad-partner-classes')
 const { addresses } = require('../config')
 
 class ContextSignals {

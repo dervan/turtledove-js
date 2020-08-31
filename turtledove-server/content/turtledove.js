@@ -1,5 +1,5 @@
 import { enableLog } from './turtledove-console.js'
-import { RenderingRequest, StoreRequest } from './static/iframe-api.js'
+import { RenderingRequest, StoreRequest } from './static/js/iframe-api.js'
 
 /**
  *  This file contains a simulated API of TURTLEDOVE (https://github.com/WICG/turtledove).
@@ -22,7 +22,7 @@ function addStoreIframe () {
   const iframe = document.createElement('iframe')
   iframe.id = storeIframeId
   iframe.style.display = 'none'
-  iframe.src = tdDemoAddress + '/tdstore'
+  iframe.src = tdDemoAddress + '/store'
   iframe.onload = () => {
     storeInitialized = true
   }
@@ -57,17 +57,17 @@ function joinAdInterestGroup (group, membershipTimeout) {
  */
 function renderAds (iframeId, contextBidRequests) {
   const renderingRequest = new RenderingRequest(contextBidRequests, logsEnabled)
-  const turtledoveBidSrc = tdDemoAddress + '/tdbid'
+  const turtledoveRenderAdSrc = tdDemoAddress + '/render-ad'
   const ad = document.getElementById(iframeId)
   if (ad === null) {
     console.error(`There is no iframe with id ${iframeId}!`)
     return
   }
-  if (ad.contentWindow !== null && ad.src === turtledoveBidSrc) {
+  if (ad.contentWindow !== null && ad.src === turtledoveRenderAdSrc) {
     ad.contentWindow.postMessage(renderingRequest, tdDemoAddress)
   } else {
     ad.onload = () => ad.contentWindow.postMessage(renderingRequest, tdDemoAddress)
-    ad.src = turtledoveBidSrc
+    ad.src = turtledoveRenderAdSrc
   }
 }
 

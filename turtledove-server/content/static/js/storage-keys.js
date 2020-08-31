@@ -1,0 +1,8 @@
+export const logsKey = 'logs'
+export const logsCountKey = 'logsCount'
+export const consoleStateKey = 'consoleState'
+export const activePartnersKey = 'activeAdPartners'
+export const interestGroupsStorageKey = 'interestGroups'
+export const fetchedAdsStorageKeyPrefix = 'fetchedAds|'
+export const winnersRegisterKey = 'winnerAds'
+export const testStorageKey = 'tdTestKey'

@@ -1,4 +1,5 @@
-import { fetchedAdsStorageKeyPrefix, Logger, saveWinner, testLocalStorageAvailability } from './common.js'
+import { Logger, saveWinner, testLocalStorageAvailability } from './common.js'
+import { fetchedAdsStorageKeyPrefix } from './storage-keys.js'
 
 const contextBidTimeout = 500
 
@@ -15,7 +16,7 @@ class NoAd {
 
 /**
  * Adds a iframe with ad to this document body
- * @param ad    an instance of Ad class
+ * @param {Ad} ad  an ad to be rendered in created in iframe
  */
 function renderAd (ad) {
   const iframe = document.createElement('iframe')
@@ -37,7 +38,7 @@ function renderAd (ad) {
     : `<p>This is an ${ad.type} ad. It was fetched for the group ${ad?.interestGroupSignals.name} from the site <a href="${ad?.interestGroupSignals?.owner}" target="_top">${ad?.interestGroupSignals?.owner}</a>.</p>`
   about.innerHTML = '<b>?</b><span class="tooltiptext">' +
     '<h4>Why I see this ad?</h4>' + description +
-    (ad.id != null ? `<b>Don't you like this ad?</b> Click <a href='/tdremove?id=${ad.id}'>here</a> to delete.` : '') +
+    (ad.id != null ? `<b>Don't you like this ad?</b> Click <a href='/ad-remove?id=${ad.id}'>here</a> to delete.` : '') +
     '</span>\n'
   document.body.appendChild(iframe)
   document.body.appendChild(about)
@@ -46,9 +47,9 @@ function renderAd (ad) {
 /**
  * Sends a request to partner for context bid and context signals used for further evaluation of interest-group-based
  *
- * @param contextData data that would be passed to ad partner
- * @param partner address of partner to send request to
- * @param timeout maximal time in ms to wait for response
+ * @param contextData  data that would be passed to ad partner
+ * @param partner  address of partner to send request to
+ * @param timeout  maximal time in ms to wait for response
  * @param logger
  *
  * @returns a Promise that describes a request to partner. Note, that it may fail or timeout.
@@ -84,24 +85,27 @@ class PartnerAdProposition {
 }
 
 /**
- * For given bids and context signals evaluates winning bid from this set.
+ * For given bids and context signals evaluate the winning bid from this set.
  *
- * @param partnerName
- * @param contextAd optional context bid.
- * @param contextSignals some object used by fetched ads to evaluate bid value
- * @param fetchedAds list of interest-group-based bids. Every bid on list should have:
- *                      - bidFunction: a function that consumes context signals and returns bidValue
- *                      - iframeContent: proper ad content
- * @param logger
+ * @param {string} partnerName
+ * @param {ContextAd} contextAd optional context bid.
+ * @param {number} contextBidValue value of contextAd if it's present
+ * @param {Object} contextSignals some object used by fetched ads to evaluate bid value
+ * @param {[(string, InterestGroupAd)]} fetchedAds list of entries from interest-group-based ads db (list of pairs, where first element is a group name
+ * and a second one is an InterestGroupAd)
+ * @param {Logger} logger
  *
  * @returns a single PartnerAdProposition, the best ad from given partner
  */
 
 function selectBest (partnerName, contextAd, contextBidValue, contextSignals, fetchedAds, logger) {
   let best = new PartnerAdProposition(partnerName, contextAd, contextBidValue || 0,
-    contextAd === null ? 'none' : 'context ad from ' + partnerName, contextSignals)
+    contextAd === null ? 'none' : `${partnerName}'s context ad`, contextSignals)
+  if (contextAd !== null) {
+    logger.log(`Consider ${best.description}. Value: ${contextBidValue}$`)
+  }
   for (const [groupName, ad] of fetchedAds) {
-    const description = partnerName + ' ad for ' + groupName
+    const description = `${partnerName}'s ad for ${groupName} group`
     /* eslint no-new-func: 0 */
     const biddingFunction = new Function('ctxSig', 'ugSig', 'let _bidFunc=' + ad.bidFunction + '; return _bidFunc(ctxSig, ugSig);')
     const bidValue = biddingFunction(contextSignals, ad.interestGroupSignals)
@@ -113,6 +117,13 @@ function selectBest (partnerName, contextAd, contextBidValue, contextSignals, fe
   return best
 }
 
+/**
+ * Performs internal auction between partner's context ad and its locally fetched ads.
+ * @param {string} partner  the name of a partner
+ * @param {Object} request  custom object constructed on publisher's website
+ * @param {Logger} logger
+ * @returns {Promise<PartnerAdProposition>}
+ */
 function partnerInternalAuction (partner, request, logger) {
   const fetchedAdsMap = JSON.parse(window.localStorage.getItem(fetchedAdsStorageKeyPrefix + partner))
   const fetchedAds = Object.entries(fetchedAdsMap || {})
@@ -124,8 +135,8 @@ function partnerInternalAuction (partner, request, logger) {
 /**
  * Function that performs an auction between all partners. Every BidResult is a PartnerAdProposition, the best proposition from a given partner.
  *
- * @param bidResults, list of PartnerAdPropositions, at most one proposition from every partner.
- * @returns the best PartnerAdProposition from all provided;
+ * @param {[PartnerAdProposition]} bidResults  list of PartnerAdPropositions, at most one proposition from every partner.
+ * @returns {PartnerAdProposition} the best PartnerAdProposition from all provided
  */
 function performAuction (bidResults) {
   let highestValue = 0
@@ -140,7 +151,14 @@ function performAuction (bidResults) {
   return winner
 }
 
-async function performOnDeviceAuction (request, logger, messageEvent) {
+/**
+ * For a given request performs an auction between all partners mentioned in request.
+ * @param {Map<string, Object>} request   a map where the key is a partner name and the value is a context bid request for this partner.
+ * @param {Logger} logger
+ * @param {string} site
+ * @returns {Promise<Ad>}
+ */
+async function performOnDeviceAuction (request, logger, site) {
   const internalAuctions = Object.entries(request).map(([partner, bidRequest]) => partnerInternalAuction(partner, bidRequest, logger))
   return await Promise.allSettled(internalAuctions)
     .then((bidResults) => {
@@ -149,8 +167,8 @@ async function performOnDeviceAuction (request, logger, messageEvent) {
         .map(r => r.value)
       const winningBid = performAuction(successfulBids)
       if (winningBid != null) {
-        logger.log('Winner: ' + winningBid.description)
-        saveWinner(winningBid, messageEvent.origin)
+        logger.log(`Winner: ${winningBid.description}.`)
+        saveWinner(winningBid, site)
         return winningBid.ad
       }
       return Promise.reject(new Error('Cannot select winner'))
@@ -159,15 +177,15 @@ async function performOnDeviceAuction (request, logger, messageEvent) {
       logger.log('Bidding failed because of: ' + reason)
       return new NoAd()
     })
-    .finally(() => logger.send())
+    .finally(() => logger.save())
 }
 
 window.onmessage = async function (messageEvent) {
   const renderingRequest = messageEvent.data
-  const logger = new Logger(messageEvent, true)
+  const logger = new Logger(messageEvent.origin, true)
 
   const bidRequests = renderingRequest.contextBidRequests // This is a map from ad-network to custom ad-network bid request object!
   logger.log('Perform an auction for the placement: ' + JSON.stringify(Object.values(bidRequests)[0]?.placement))
-  renderAd(await performOnDeviceAuction(bidRequests, logger, messageEvent))
+  renderAd(await performOnDeviceAuction(bidRequests, logger, messageEvent.origin))
 }
 testLocalStorageAvailability()

@@ -32,13 +32,14 @@ function serveTemplatedJs (file) {
 const app = express()
 app.use(cors())
 app.use('/static', express.static(path.join(__dirname, 'content/static')))
-app.get('/tdstore', jsEmbeddedIntoHtml('./static/turtledove-store.js'))
-app.get('/tdbid', jsEmbeddedIntoHtml('./static/turtledove-bid.js'))
 app.get('/turtledove.js', serveTemplatedJs('/content/turtledove.js'))
 app.get('/turtledove-console.js', serveTemplatedJs('/content/turtledove-console.js'))
-app.get('/tdremove', serveHtml('/content/tdremove.html'))
-app.get('/log', serveHtml('/content/log.html'))
-app.get('/', serveHtml('/content/user-interface.html'))
+
+app.get('/store', jsEmbeddedIntoHtml('./static/js/store.js'))
+app.get('/render-ad', jsEmbeddedIntoHtml('./static/js/render-ad.js'))
+app.get('/ad-remove', serveHtml('/content/static/ad-remove.html'))
+app.get('/console', serveHtml('/content/static/console.html'))
+app.get('/', serveHtml('/content/static/user-interface.html'))
 
 app.listen(ports.turtledovePort,
   () => console.log(`TD demo server listening at http://localhost:${ports.turtledovePort}`))

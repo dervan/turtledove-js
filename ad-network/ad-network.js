@@ -7,7 +7,7 @@ const { ports, addresses } = require('../config')
 const { computeInterestGroupSignals, interestGroupToAdParams } = require('./interest-group-evaluation')
 const { extractContextSignals, getContextAd } = require('./context-evaluation')
 
-const { InterestGroupAd, ContextBidResponse } = require('../turtledove-server/content/static/ad-partner-classes')
+const { InterestGroupAd, ContextBidResponse } = require('../turtledove-server/content/static/js/ad-partner-classes')
 
 const app = express()
 app.use(cors())

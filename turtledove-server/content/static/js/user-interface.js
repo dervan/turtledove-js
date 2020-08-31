@@ -1,9 +1,12 @@
-const interestGroupsStorageKey = 'interestGroups'
-const activePartnersKey = 'activeAdPartners'
-const fetchedAdsStorageKeyPrefix = 'fetchedAds|'
-const winnersRegisterKey = 'winnerAds'
-const logsKey = 'logs'
-const logStateKey = 'logState'
+import {
+  activePartnersKey,
+  consoleStateKey,
+  fetchedAdsStorageKeyPrefix,
+  interestGroupsStorageKey,
+  logsCountKey,
+  logsKey,
+  winnersRegisterKey
+} from './storage-keys.js'
 
 /* eslint-env browser */
 
@@ -19,14 +22,14 @@ function listActivePartners () {
 /**
  * Lists all ads that won an on-device auction.
  */
-function listWinners () {
+export function listWinners () {
   return JSON.parse(window.localStorage.getItem(winnersRegisterKey))?.reverse() || []
 }
 
 /**
  * Lists all retrieved ads saved in localStorage.
  */
-function listAds () {
+export function listAds () {
   const ads = []
   for (const adPartner of listActivePartners()) {
     const partnerAdsKey = fetchedAdsStorageKeyPrefix + adPartner
@@ -45,27 +48,29 @@ function listAds () {
 /**
  * Restarts turtledove console
  */
-function restartConsole () {
-  window.localStorage.setItem(logStateKey, '{}')
+export function restartConsole () {
+  window.localStorage.setItem(consoleStateKey, '{}')
 }
+
 /**
  * Removes turtledove log
  */
-function removeLogs () {
-  window.localStorage.setItem(logsKey, '[]')
+export function removeLogs () {
+  window.localStorage.setItem(logsKey, null)
+  window.localStorage.setItem(logsCountKey, 0)
 }
 
 /**
  * Removes registry of all previously shown ads.
  */
-function removeWinnersHistory () {
+export function removeWinnersHistory () {
   window.localStorage.setItem(winnersRegisterKey, '[]')
 }
 
 /**
  * Removes all previously fetched ads from local storage
  */
-function removeFetchedAds () {
+export function removeFetchedAds () {
   for (const adPartner of listActivePartners()) {
     window.localStorage.setItem(fetchedAdsStorageKeyPrefix + adPartner, '{}')
   }
@@ -76,7 +81,7 @@ function removeFetchedAds () {
 /**
  * Removes one previously fetched ad from local storage
  */
-function removeAd (id) {
+export function removeAd (id) {
   for (const adPartner of listActivePartners()) {
     const adPartnerKey = fetchedAdsStorageKeyPrefix + adPartner
     const ads = JSON.parse(window.localStorage.getItem(adPartnerKey)) || {}
