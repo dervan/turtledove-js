@@ -1,7 +1,7 @@
 import { Logger, saveWinner, testLocalStorageAvailability } from './common.js'
 import { fetchedAdsStorageKeyPrefix } from './storage-keys.js'
 
-const contextBidTimeout = 500
+const contextualBidTimeout = 500
 
 class NoAd {
   constructor () {
@@ -16,7 +16,7 @@ class NoAd {
 
 /**
  * Adds a iframe with ad to this document body
- * @param {Ad} ad  an ad to be rendered in created in iframe
+ * @param {Ad} ad - an ad to be rendered in created in iframe
  */
 function renderAd (ad) {
   const iframe = document.createElement('iframe')
@@ -34,7 +34,7 @@ function renderAd (ad) {
   about.style.width = '1em'
   about.style.height = '1em'
   about.style.textAlign = 'center'
-  const description = ad.type === 'context' ? '<p>This ad was chosen based on the context of the article you are currently in.</p>'
+  const description = ad.type === 'contextual' ? '<p>This ad was chosen based on the context of the article you are currently in.</p>'
     : `<p>This is an ${ad.type} ad. It was fetched for the group ${ad?.interestGroupSignals.name} from the site <a href="${ad?.interestGroupSignals?.owner}" target="_top">${ad?.interestGroupSignals?.owner}</a>.</p>`
   about.innerHTML = '<b>?</b><span class="tooltiptext">' +
     '<h4>Why I see this ad?</h4>' + description +
@@ -45,23 +45,20 @@ function renderAd (ad) {
 }
 
 /**
- * Sends a request to partner for context bid and context signals used for further evaluation of interest-group-based
+ * Sends a request to partner for contextual bid and context signals used for further evaluation of interest-group-based
  *
- * @param contextData  data that would be passed to ad partner
- * @param partner  address of partner to send request to
- * @param timeout  maximal time in ms to wait for response
- * @param logger
+ * @param {Object} contextData - data that would be passed to ad partner
+ * @param {string} partner - address of partner to send request to
+ * @param {number} timeout - maximal time in ms to wait for response
+ * @param {Logger} logger
  *
- * @returns a Promise that describes a request to partner. Note, that it may fail or timeout.
- * Final result of this context bid should be an instance of class ContextBidResponse, consisting two fields:
- * - contextAd: a context-only ad, modelled as an Ad object.
- * - contextSignals: any object, further passed to fetchedAds
+ * @returns {Promise<ContextualBidResponse>}
  *
  */
-function doContextBid (contextData, partner, timeout, logger) {
+function doContextualBid (contextData, partner, timeout, logger) {
   const controller = new AbortController()
   setTimeout(() => controller.abort(), timeout)
-  return fetch(`${partner}/fetch-context-bid`, {
+  return fetch(`${partner}/fetch-contextual-bid`, {
     signal: controller.signal,
     method: 'post',
     headers: { 'Content-Type': 'application/json' },
@@ -88,21 +85,21 @@ class PartnerAdProposition {
  * For given bids and context signals evaluate the winning bid from this set.
  *
  * @param {string} partnerName
- * @param {ContextAd} contextAd optional context bid.
- * @param {number} contextBidValue value of contextAd if it's present
- * @param {Object} contextSignals some object used by fetched ads to evaluate bid value
- * @param {[(string, InterestGroupAd)]} fetchedAds list of entries from interest-group-based ads db (list of pairs, where first element is a group name
+ * @param {ContextualAd} [contextualAd] - optional contextual bid.
+ * @param {number} [contextualBidValue] - value of contextualAd if it's present
+ * @param {Object} [contextSignals] - some object used by fetched ads to evaluate bid value
+ * @param {[string, InterestGroupAd][]} fetchedAds - list of entries from interest-group-based ads db (list of pairs, where first element is a group name
  * and a second one is an InterestGroupAd)
  * @param {Logger} logger
  *
- * @returns a single PartnerAdProposition, the best ad from given partner
+ * @returns {PartnerAdProposition} - the best ad from given partner
  */
 
-function selectBest (partnerName, contextAd, contextBidValue, contextSignals, fetchedAds, logger) {
-  let best = new PartnerAdProposition(partnerName, contextAd, contextBidValue || 0,
-    contextAd === null ? 'none' : `${partnerName}'s context ad`, contextSignals)
-  if (contextAd !== null) {
-    logger.log(`Consider ${best.description}. Value: ${contextBidValue}$`)
+function selectBest (partnerName, contextualAd, contextualBidValue, contextSignals, fetchedAds, logger) {
+  let best = new PartnerAdProposition(partnerName, contextualAd, contextualBidValue || 0,
+    contextualAd === null ? 'none' : `${partnerName}'s contextual ad`, contextSignals)
+  if (contextualAd !== null) {
+    logger.log(`Consider ${best.description}. Value: ${contextualBidValue}$`)
   }
   for (const [groupName, ad] of fetchedAds) {
     const description = `${partnerName}'s ad for ${groupName} group`
@@ -118,24 +115,24 @@ function selectBest (partnerName, contextAd, contextBidValue, contextSignals, fe
 }
 
 /**
- * Performs internal auction between partner's context ad and its locally fetched ads.
- * @param {string} partner  the name of a partner
- * @param {Object} request  custom object constructed on publisher's website
+ * Performs internal auction between partner's contextual ad and its locally fetched ads.
+ * @param {string} partner - the name of a partner
+ * @param {Object} request - custom object constructed on publisher's website
  * @param {Logger} logger
  * @returns {Promise<PartnerAdProposition>}
  */
 function partnerInternalAuction (partner, request, logger) {
   const fetchedAdsMap = JSON.parse(window.localStorage.getItem(fetchedAdsStorageKeyPrefix + partner))
   const fetchedAds = Object.entries(fetchedAdsMap || {})
-  return doContextBid(request, partner, contextBidTimeout, logger) // evaluate context only
-    .then((ctx) => selectBest(partner, ctx.contextAd, ctx.contextBidValue, ctx.contextSignals, fetchedAds, logger), // evaluate stored ads
+  return doContextualBid(request, partner, contextualBidTimeout, logger) // evaluate context only
+    .then((ctx) => selectBest(partner, ctx.contextualAd, ctx.contextualBidValue, ctx.contextSignals, fetchedAds, logger), // evaluate stored ads
       (rejectReason) => selectBest(partner, null, null, null, fetchedAds, logger)) // if context evaluation failed, try without it
 }
 
 /**
  * Function that performs an auction between all partners. Every BidResult is a PartnerAdProposition, the best proposition from a given partner.
  *
- * @param {[PartnerAdProposition]} bidResults  list of PartnerAdPropositions, at most one proposition from every partner.
+ * @param {PartnerAdProposition[]} bidResults - list of PartnerAdPropositions, at most one proposition from every partner.
  * @returns {PartnerAdProposition} the best PartnerAdProposition from all provided
  */
 function performAuction (bidResults) {
@@ -153,7 +150,7 @@ function performAuction (bidResults) {
 
 /**
  * For a given request performs an auction between all partners mentioned in request.
- * @param {Map<string, Object>} request   a map where the key is a partner name and the value is a context bid request for this partner.
+ * @param {Map<string, Object>} request - a map where the key is a partner name and the value is a contextual bid request for this partner.
  * @param {Logger} logger
  * @param {string} site
  * @returns {Promise<Ad>}
@@ -184,7 +181,7 @@ window.onmessage = async function (messageEvent) {
   const renderingRequest = messageEvent.data
   const logger = new Logger(messageEvent.origin, true)
 
-  const bidRequests = renderingRequest.contextBidRequests // This is a map from ad-network to custom ad-network bid request object!
+  const bidRequests = renderingRequest.contextualBidRequests // This is a map from ad-network to custom ad-network bid request object!
   logger.log('Perform an auction for the placement: ' + JSON.stringify(Object.values(bidRequests)[0]?.placement))
   renderAd(await performOnDeviceAuction(bidRequests, logger, messageEvent.origin))
 }

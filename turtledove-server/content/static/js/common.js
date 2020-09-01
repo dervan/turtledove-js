@@ -79,7 +79,7 @@ export function saveWinner (winningBid, publisherSite) {
     bidValue: winningBid.value,
     iframeContent: winningBid.ad.iframeContent,
     interestGroupSignals: winningBid.ad.interestGroupSignals,
-    contextSignals: winningBid.ad.type === 'context' ? '' : winningBid.contextSignals,
+    contextSignals: winningBid.ad.type === 'contextual' ? '' : winningBid.contextSignals,
     site: publisherSite,
     time: new Date().toISOString()
   })

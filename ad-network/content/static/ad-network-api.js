@@ -10,7 +10,7 @@ export class Placement {
   }
 }
 
-export class ContextBidRequest {
+export class ContextualBidRequest {
   constructor (topic, placement, adPolicy) {
     this.site = window.location.host
     this.topic = topic

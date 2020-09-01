@@ -5,9 +5,9 @@ const bodyParser = require('body-parser')
 
 const { ports, addresses } = require('../config')
 const { computeInterestGroupSignals, interestGroupToAdParams } = require('./interest-group-evaluation')
-const { extractContextSignals, getContextAd } = require('./context-evaluation')
+const { extractContextSignals, getContextualAd } = require('./context-evaluation')
 
-const { InterestGroupAd, ContextBidResponse } = require('../turtledove-server/content/static/js/ad-partner-classes')
+const { InterestGroupAd, ContextualBidResponse } = require('../turtledove-server/content/static/js/ad-partner-classes')
 
 const app = express()
 app.use(cors())
@@ -28,21 +28,22 @@ async function fetchAds (interestGroupKey) {
 
 /**
  * Receives some information about the context (in the format settled between publisher and ad-network). Basing on this,
- * ad-network is returning contextSignals (later fed to bidding function from InterestGroupAd) and purely context ad.
- * @param {ContextBidRequest} contextBidRequest
- * @returns {Promise<ContextBidResponse>}
+ * ad-network is returning contextSignals (later fed to bidding function from InterestGroupAd) and purely contextual ad.
+ * @param {ContextualBidRequest} contextualBidRequest
+ * @returns {Promise<ContextualBidResponse>}
  */
-async function fetchContextBid (contextBidRequest) {
-  console.log(`Fetch context bid for: ${JSON.stringify(contextBidRequest)}`)
-  const contextSignals = extractContextSignals(contextBidRequest)
-  const evaluatedContextAd = await getContextAd(contextBidRequest, contextSignals)
-  return new ContextBidResponse(contextSignals, evaluatedContextAd?.contextAd, evaluatedContextAd?.bidValue)
+async function fetchContextualBid (contextualBidRequest) {
+  console.log(`Fetch contextual bid for: ${JSON.stringify(contextualBidRequest)}`)
+  const contextSignals = extractContextSignals(contextualBidRequest)
+  const evaluatedContextualAd = await getContextualAd(contextualBidRequest, contextSignals)
+  return new ContextualBidResponse(contextSignals, evaluatedContextualAd?.contextualAd, evaluatedContextualAd?.bidValue)
 }
 
 app.get('/fetch-ads', async (req, res) => {
   res.json(await fetchAds(decodeURIComponent(req.query.interest_group)))
 })
-app.post('/fetch-context-bid', async (req, res) => res.json(await fetchContextBid(req.body)))
+app.post('/fetch-context-bid', async (req, res) => res.json(await fetchContextualBid(req.body)))
+app.post('/fetch-contextual-bid', async (req, res) => res.json(await fetchContextualBid(req.body)))
 app.use('/static', express.static(`${__dirname}/content/static`))
 app.get('/', (req, res) => {
   res.set('Content-Type', 'text/html')

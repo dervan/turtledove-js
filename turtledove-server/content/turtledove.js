@@ -65,11 +65,11 @@ function joinAdInterestGroup (group, membershipTimeout) {
  * Sends a request to render a TURTLEDOVE ad in an iframe with a given ID. Note, that this iframe have to be initialized
  * earlier during an initializeTurtledove call.
  * @param {string} iframeId
- * @param {Map<string, Object>} contextBidRequests - a map that for every entry (ad partner address) contains
- * context bid request for it (custom object, as specified by ad partner)
+ * @param {Map<string, Object>} contextualBidRequests - a map that for every entry (ad partner address) contains
+ * contextual bid request for it (custom object, as specified by ad partner)
  */
-function renderAds (iframeId, contextBidRequests) {
-  const renderingRequest = new RenderingRequest(contextBidRequests, logsEnabled)
+function renderAds (iframeId, contextualBidRequests) {
+  const renderingRequest = new RenderingRequest(contextualBidRequests, logsEnabled)
   const turtledoveRenderAdSrc = tdDemoAddress + '/render-ad'
   const ad = document.getElementById(iframeId)
   if (ad === null) {

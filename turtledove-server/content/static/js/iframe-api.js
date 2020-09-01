@@ -8,8 +8,8 @@ export class StoreRequest {
 }
 
 export class RenderingRequest {
-  constructor (contextBidRequests, loggingEnabled) {
-    this.contextBidRequests = contextBidRequests
+  constructor (contextualBidRequests, loggingEnabled) {
+    this.contextualBidRequests = contextualBidRequests
     this.loggingEnabled = loggingEnabled
   }
 }

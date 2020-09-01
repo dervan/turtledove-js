@@ -52,7 +52,7 @@ function removeInterestGroup (interestGroup, logger) {
 /**
  * Updates a list of all ad partners that have some active ads.
  *
- * @param addedReaders list of readers that should be added
+ * @param {string[]} addedReaders - list of readers that should be added
  */
 function updateActivePartners (addedReaders) {
   const activePartners = JSON.parse(window.localStorage.getItem(activePartnersKey)) || []

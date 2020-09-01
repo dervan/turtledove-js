@@ -51,7 +51,7 @@ This part is a dummy company that serves ads. It contains some hardcoded data to
 Note, that an interface between publishers and the ad network is completely arbitrary and is not an element of TURTLEDOVE specification. Our ad network is available at address https://ad-network.pl
 # Sample testing scenario
 1. If you already entered on any website in this demo, go to https://turtledove.pl and clear your data.
-2. Enter https://aboutplanes.pl and see context ads (you were not added to any group yet). To get the better insight you can also open a console by clicking on a question mark with a turtledove on it in the top-right corner and read what just happened.
+2. Enter https://aboutplanes.pl and see contextual ads (you were not added to any group yet). To get the better insight you can also open a console by clicking on a question mark with a turtledove on it in the top-right corner and read what just happened.
 3. Go to the https://sportequipment.pl and check out bikes page.
 4. Check both https://aboutplanes.pl and https://aboutanimals.pl. The bike-related ad will not show on a website about planes. You can go now to https://turtledove.pl and check the bidding function of the ad for bikes_viewer and context signals of auctions that were performed on both websites - that will explain why winners differ in both auctions.
 5. Go to the https://sportequipment.pl and this time list rollerblades.
