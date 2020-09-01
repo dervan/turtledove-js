@@ -57,13 +57,13 @@
 </div>
 <script type="module">
   import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
-  import { ContextBidRequest, AdPolicy, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
+  import { ContextualBidRequest, AdPolicy, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
 
   const adPolicy = new AdPolicy(['ship', 'train', 'car', 'bike'])
 
   initTurtledove({ logs: true })
-  window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextBidRequest('planes', new Placement('left'), adPolicy) })
-  window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextBidRequest('planes', new Placement('right'), adPolicy) })
+  window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextualBidRequest('planes', new Placement('left'), adPolicy) })
+  window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextualBidRequest('planes', new Placement('right'), adPolicy) })
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 const { AdParams } = require('./ad-params')
-const { ContextAd } = require('../turtledove-server/content/static/js/ad-partner-classes')
+const { ContextualAd } = require('../turtledove-server/content/static/js/ad-partner-classes')
 const { addresses } = require('../config')
 
 class ContextSignals {
@@ -10,39 +10,39 @@ class ContextSignals {
   }
 }
 
-class EvaluatedContextAd {
-  constructor (contextAd, bidValue) {
-    this.contextAd = contextAd
+class EvaluatedContextualAd {
+  constructor (contextualAd, bidValue) {
+    this.contextualAd = contextualAd
     this.bidValue = bidValue
   }
 }
 
 /**
  * Returns context signals that will be fed to bidding function during the on-device auction. Returned signals are completely free-form JSON.
- * @param {ContextBidRequest} contextBidRequest
+ * @param {ContextualBidRequest} contextualBidRequest
  * @returns {ContextSignals}
  */
-function extractContextSignals (contextBidRequest) {
+function extractContextSignals (contextualBidRequest) {
   const igOwnerBonus = {}
-  if (contextBidRequest?.topic === 'animals') {
+  if (contextualBidRequest?.topic === 'animals') {
     igOwnerBonus[new URL(addresses.animalsAdvertiser).host] = 1
   }
-  return new ContextSignals(contextBidRequest?.topic, contextBidRequest?.adPolicy?.deniedTerms, igOwnerBonus)
+  return new ContextSignals(contextualBidRequest?.topic, contextualBidRequest?.adPolicy?.deniedTerms, igOwnerBonus)
 }
 
 /**
- * Returns context ad based on received context and previously extracted ContextSignals
- * @param {ContextBidRequest} contextBidRequest
+ * Returns contextual ad based on received ContextualBidRequest and previously extracted ContextSignals
+ * @param {ContextualBidRequest} contextualBidRequest
  * @param {ContextSignals} contextSignals
- * @returns {Promise<EvaluatedContextAd>}
+ * @returns {Promise<EvaluatedContextualAd>}
  */
-async function getContextAd (contextBidRequest, contextSignals) {
-  const id = contextSignals.topic + '-' + contextBidRequest.placement?.side
+async function getContextualAd (contextualBidRequest, contextSignals) {
+  const id = contextSignals.topic + '-' + contextualBidRequest.placement?.side
   const ctxAdParams = new AdParams('context_' + contextSignals.topic, `https://picsum.photos/seed/${id}/280/180`, null)
-  const isOnRight = contextBidRequest.placement?.side === 'right'
-  const isOnTransportSite = addresses.planesPublisher.includes(contextBidRequest?.site)
+  const isOnRight = contextualBidRequest.placement?.side === 'right'
+  const isOnTransportSite = addresses.planesPublisher.includes(contextualBidRequest?.site)
   const bidValue = isOnRight ? (isOnTransportSite ? 2 : 0.15) : 0.05
-  return new EvaluatedContextAd(new ContextAd(id, await ctxAdParams.generateAdHtml(), addresses.adPartner), bidValue)
+  return new EvaluatedContextualAd(new ContextualAd(id, await ctxAdParams.generateAdHtml(), addresses.adPartner), bidValue)
 }
 
-module.exports = { getContextAd, extractContextSignals }
+module.exports = { getContextualAd, extractContextSignals }

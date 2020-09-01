@@ -55,11 +55,11 @@
 </div>
 <script type="module">
   import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
-  import { ContextBidRequest, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
+  import { ContextualBidRequest, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
 
   initTurtledove({ logs: true })
-  window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextBidRequest('animals', new Placement('left')) })
-  window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextBidRequest('animals', new Placement('right')) })
+  window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextualBidRequest('animals', new Placement('left')) })
+  window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextualBidRequest('animals', new Placement('right')) })
 </script>
 </body>
 </html>
