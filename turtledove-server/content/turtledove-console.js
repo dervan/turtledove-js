@@ -22,7 +22,6 @@ const consoleCss = '#td-console {\n' +
   '    overflow-y: auto;\n' +
   '    box-sizing: border-box;\n' +
   '}\n' +
-  '\n' +
   '#td-console-icon {\n' +
   '    border: 1px groove black;\n' +
   '    position: fixed;\n' +
@@ -34,7 +33,6 @@ const consoleCss = '#td-console {\n' +
   '    transition: border 2s ease;\n' +
   '    transition: background 2s ease;\n' +
   '}\n' +
-  '\n' +
   '#td-console-overlay {\n' +
   '    position: fixed;\n' +
   '    bottom: 0;\n' +
@@ -160,7 +158,7 @@ function toggleLogConsole () {
   }
 }
 
-function enableLog (callback) {
+function enableLog () {
   const consoleStyle = document.createElement('style')
   consoleStyle.setAttribute('type', 'text/css')
   consoleStyle.appendChild(document.createTextNode(consoleCss))
@@ -179,15 +177,12 @@ function enableLog (callback) {
   iframe.src = tdDemoAddress + '/console'
   iframe.id = consoleIframeId
   iframe.style.visibility = 'hidden'
-  document.body.appendChild(iframe)
-  document.body.appendChild(icon)
-
   iframe.onload = () => {
     iframe.contentWindow.postMessage({ type: 'load' }, tdDemoAddress)
-    if (callback !== undefined) {
-      callback()
-    }
   }
+
+  document.body.appendChild(iframe)
+  document.body.appendChild(icon)
 
   // if receive response from log iframe update its position and size
   window.addEventListener('message', (event) => {

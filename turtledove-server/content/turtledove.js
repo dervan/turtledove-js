@@ -11,9 +11,9 @@ import { RenderingRequest, StoreRequest } from './static/js/iframe-api.js'
 
 const tdDemoAddress = '<%= it.turtledoveHost %>'
 const storeIframeId = 'td-demo-store'
-let storeInitialized = false
+const storeQueue = []
+let storeLoaded = false
 let logsEnabled = false
-let logsReady = false
 
 /**
  * Adds and initializes an iframe that later is used to save TD data to localStorage.
@@ -24,9 +24,20 @@ function addStoreIframe () {
   iframe.style.display = 'none'
   iframe.src = tdDemoAddress + '/store'
   iframe.onload = () => {
-    storeInitialized = true
+    storeLoaded = true
+    handleStoreQueue()
   }
   document.body.appendChild(iframe)
+}
+
+function handleStoreQueue () {
+  if (!storeLoaded) {
+    return
+  }
+  const iframeContent = document.getElementById(storeIframeId).contentWindow
+  while (storeQueue.length > 0) {
+    iframeContent.postMessage(storeQueue.shift(), tdDemoAddress)
+  }
 }
 
 /**
@@ -35,7 +46,8 @@ function addStoreIframe () {
  * @param {InterestGroup} group
  */
 function leaveAdInterestGroup (group) {
-  document.getElementById(storeIframeId).contentWindow.postMessage(new StoreRequest('remove', group, null, logsEnabled), tdDemoAddress)
+  storeQueue.push(new StoreRequest('remove', group, null, logsEnabled))
+  handleStoreQueue()
 }
 
 /**
@@ -45,7 +57,8 @@ function leaveAdInterestGroup (group) {
  * @param {number} membershipTimeout
  */
 function joinAdInterestGroup (group, membershipTimeout) {
-  document.getElementById(storeIframeId).contentWindow.postMessage(new StoreRequest('store', group, membershipTimeout, logsEnabled), tdDemoAddress)
+  storeQueue.push(new StoreRequest('store', group, membershipTimeout, logsEnabled))
+  handleStoreQueue()
 }
 
 /**
@@ -80,44 +93,14 @@ function renderAds (iframeId, contextBidRequests) {
  */
 export function initTurtledove (options) {
   if (options.logs) {
-    logsReady = false
     logsEnabled = true
-    enableLog(() => { logsReady = true })
-  } else {
-    logsReady = true
+    enableLog()
   }
   addStoreIframe()
 
-  // "retry" wrapper retries a function if given condition is not true - here it means "retry if iframes are not loaded"
-  window.navigator.renderAds = retry(renderAds, () => logsReady, 20, 100)
-  window.navigator.joinAdInterestGroup = retry(joinAdInterestGroup, () => (storeInitialized && logsReady), 20, 100)
-  window.navigator.leaveAdInterestGroup = retry(leaveAdInterestGroup, () => (storeInitialized && logsReady), 20, 100)
-}
-
-/**
- * Helper utility to retry a function in a given interval. If the condition is not met, wait interval before next try.
- * If it is currently met, then just evaluate a fun with parameters given to function returned by retry
- * (e.g. retry(console.log, () => true, 1, 10)("foo", "bar") will result in call console.log("foo", "bar"))
- *
- * @param {function} fun - function to be executed
- * @param {function(): boolean} condition
- * @param {number} times - how many times should retry before failing
- * @param {number} interval - number of milliseconds to wait before next check
- * @returns {function(...[*]=)} a function that does exactly what `fun` does, but waits until condition is met.
- * Or fails after (times * interval) ms.
- */
-function retry (fun, condition, times, interval) {
-  return function () {
-    if (!condition() && times > 0) {
-      setTimeout(() => retry(fun, condition, times - 1, interval)(...arguments), interval)
-      return
-    }
-    if (times <= 0) {
-      console.error('Cannot execute conditional action!')
-      return
-    }
-    fun(...arguments)
-  }
+  window.navigator.renderAds = renderAds
+  window.navigator.joinAdInterestGroup = joinAdInterestGroup
+  window.navigator.leaveAdInterestGroup = leaveAdInterestGroup
 }
 
 /**

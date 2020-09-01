@@ -107,7 +107,7 @@ function selectBest (partnerName, contextAd, contextBidValue, contextSignals, fe
   for (const [groupName, ad] of fetchedAds) {
     const description = `${partnerName}'s ad for ${groupName} group`
     /* eslint no-new-func: 0 */
-    const biddingFunction = new Function('ctxSig', 'ugSig', 'let _bidFunc=' + ad.bidFunction + '; return _bidFunc(ctxSig, ugSig);')
+    const biddingFunction = new Function('ctxSig', 'igSig', 'let _bidFunc=' + ad.bidFunction + '; return _bidFunc(ctxSig, igSig);')
     const bidValue = biddingFunction(contextSignals, ad.interestGroupSignals)
     logger.log(`Consider  ${description}. Value: ${bidValue}$`)
     if (bidValue > best.value) {

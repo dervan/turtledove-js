@@ -120,8 +120,8 @@
         ad.appendChild(iframe)
         const bidFunction = row.insertCell()
         bidFunction.innerHTML = '<pre>' + js_beautify(adDescription.fetchedAd.bidFunction, formatterOptions) + '</pre>'
-        const ugSignals = row.insertCell()
-        ugSignals.innerHTML = '<pre>' + js_beautify(JSON.stringify(adDescription.fetchedAd.interestGroupSignals)) + '</pre>'
+        const igSignals = row.insertCell()
+        igSignals.innerHTML = '<pre>' + js_beautify(JSON.stringify(adDescription.fetchedAd.interestGroupSignals)) + '</pre>'
       }
     </script>
 
