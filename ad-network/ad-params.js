@@ -1,4 +1,7 @@
-const eta = require('eta')
+import eta from 'eta'
+import path from 'path'
+
+const __dirname = path.resolve('./ad-network')
 
 function hsvToRgb (h, s, v) {
   const i = Math.floor(h * 6)
@@ -50,7 +53,7 @@ function rgbToString (rgb) {
   return 'rgb(' + rgb.r + ', ' + rgb.g + ',' + rgb.b + ')'
 }
 
-class AdParams {
+export class AdParams {
   constructor (adTarget, image, href) {
     this.adTarget = adTarget
     this.image = image
@@ -63,5 +66,3 @@ class AdParams {
     return await eta.renderFile(`${__dirname}/content/ad.html.ejs`, this)
   }
 }
-
-module.exports = { AdParams }

@@ -1,4 +1,4 @@
-const ports = {
+export const ports = {
   turtledovePort: 8008,
   adPartnerPort: 8007,
   animalsPublisherPort: 8000,
@@ -8,7 +8,7 @@ const ports = {
   sportEquipmentAdvertiserPort: 8004
 }
 
-const addresses = {
+const addressesVariants = {
   web: {
     turtledoveHost: 'https://turtledove.pl',
     adPartner: 'https://ad-network.pl',
@@ -28,5 +28,4 @@ const addresses = {
     sportEquipmentAdvertiser: 'http://localhost:' + ports.sportEquipmentAdvertiserPort
   }
 }
-
-module.exports = { addresses: process.argv[2] === 'prod' ? addresses.web : addresses.local, ports: ports }
+export const addresses = process.argv[2] === 'prod' ? addressesVariants.web : addressesVariants.local

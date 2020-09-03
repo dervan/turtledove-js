@@ -1,7 +1,9 @@
-const express = require('express')
-const eta = require('eta')
-const { ports, addresses } = require('../config')
+import express from 'express'
+import eta from 'eta'
+import path from 'path'
+import { ports, addresses } from '../config.js'
 
+const __dirname = path.resolve('./websites/')
 const statics = express.static(`${__dirname}/content/static`)
 
 function getRenderedHtml (filename, environment) {

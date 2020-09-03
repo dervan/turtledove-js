@@ -1,4 +1,4 @@
-const { addresses } = require('../config')
+import { addresses } from '../config.js'
 
 function extractHost (url) {
   return new URL(url).host
@@ -70,5 +70,4 @@ function prepareAdData () {
 
   return adData
 }
-
-module.exports = prepareAdData()
+export const adsDb = prepareAdData()
