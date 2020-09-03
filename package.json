@@ -2,6 +2,7 @@
   "name": "turtledove-js",
   "description": "TURTLEDOVE implementation and examples",
   "main": "turtledove-server/turtledove-server.js",
+  "type": "module",
   "scripts": {
     "start": "concurrently \"nodemon ad-network/ad-network.js\" \"nodemon turtledove-server/turtledove-server.js\" \"nodemon websites/websites.js\"",
     "deploy": "concurrently \"node ad-network/ad-network.js prod\" \"node turtledove-server/turtledove-server.js prod\" \"node websites/websites.js prod\"",
@@ -19,7 +20,8 @@
     "cors": "^2.8.5",
     "eta": "^1.2.2",
     "express": "^4.17.1",
-    "nodemo": "^1.0.0"
+    "nodemo": "^1.0.0",
+    "turtledove-js-api": "^0.1.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

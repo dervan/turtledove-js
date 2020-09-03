@@ -1,9 +1,10 @@
-const express = require('express')
-const fs = require('fs')
-const cors = require('cors')
-const eta = require('eta')
-const path = require('path')
-const { ports, addresses } = require('../config')
+import express from 'express'
+import fs from 'fs'
+import cors from 'cors'
+import eta from 'eta'
+import path from 'path'
+import { ports, addresses } from '../config.js'
+const __dirname = path.resolve('./turtledove-server/')
 
 function jsEmbeddedIntoHtml (pathToJs) {
   return (req, res) => {

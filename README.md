@@ -48,7 +48,9 @@ if you click on an ad and then buy food, then you will see higher valued ads for
 
 ## Ad network
 This part is a dummy company that serves ads. It contains some hardcoded data to customize responses for publishers and advertisers from this sample.
-Note, that an interface between publishers and the ad network is completely arbitrary and is not an element of TURTLEDOVE specification. Our ad network is available at address https://ad-network.pl
+The interface between _turtledove.js_ and ad network have to be rigid and to allow easy implementation of new ad networks is published in a separate `turtledove-js-api` npm package.
+On the other hand an interface between publishers and the ad network is completely arbitrary and is not an element of TURTLEDOVE specification. Our ad network is available at address https://ad-network.pl
+
 # Sample testing scenario
 1. If you already entered on any website in this demo, go to https://turtledove.pl and clear your data.
 2. Enter https://aboutplanes.pl and see contextual ads (you were not added to any group yet). To get the better insight you can also open a console by clicking on a question mark with a turtledove on it in the top-right corner and read what just happened.

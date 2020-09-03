@@ -1,6 +1,6 @@
-const { AdParams } = require('./ad-params')
-const { ContextualAd } = require('../turtledove-server/content/static/js/ad-partner-classes')
-const { addresses } = require('../config')
+import { ContextualAd } from 'turtledove-js-api'
+import { AdParams } from './ad-params.js'
+import { addresses } from '../config.js'
 
 class ContextSignals {
   constructor (topic, deniedTerms, igOwnerBonus) {
@@ -22,7 +22,7 @@ class EvaluatedContextualAd {
  * @param {ContextualBidRequest} contextualBidRequest
  * @returns {ContextSignals}
  */
-function extractContextSignals (contextualBidRequest) {
+export function extractContextSignals (contextualBidRequest) {
   const igOwnerBonus = {}
   if (contextualBidRequest?.topic === 'animals') {
     igOwnerBonus[new URL(addresses.animalsAdvertiser).host] = 1
@@ -36,7 +36,7 @@ function extractContextSignals (contextualBidRequest) {
  * @param {ContextSignals} contextSignals
  * @returns {Promise<EvaluatedContextualAd>}
  */
-async function getContextualAd (contextualBidRequest, contextSignals) {
+export async function getContextualAd (contextualBidRequest, contextSignals) {
   const id = contextSignals.topic + '-' + contextualBidRequest.placement?.side
   const ctxAdParams = new AdParams('context_' + contextSignals.topic, `https://picsum.photos/seed/${id}/280/180`, null)
   const isOnRight = contextualBidRequest.placement?.side === 'right'
@@ -44,5 +44,3 @@ async function getContextualAd (contextualBidRequest, contextSignals) {
   const bidValue = isOnRight ? (isOnTransportSite ? 2 : 0.15) : 0.05
   return new EvaluatedContextualAd(new ContextualAd(id, await ctxAdParams.generateAdHtml(), addresses.adPartner), bidValue)
 }
-
-module.exports = { getContextualAd, extractContextSignals }

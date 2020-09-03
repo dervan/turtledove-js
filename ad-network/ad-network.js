@@ -1,14 +1,15 @@
-const express = require('express')
-const cors = require('cors')
-const fs = require('fs')
-const bodyParser = require('body-parser')
+import express from 'express'
+import cors from 'cors'
+import fs from 'fs'
+import bodyParser from 'body-parser'
+import path from 'path'
+import { InterestGroupAd, ContextualBidResponse } from 'turtledove-js-api'
 
-const { ports, addresses } = require('../config')
-const { computeInterestGroupSignals, interestGroupToAdParams } = require('./interest-group-evaluation')
-const { extractContextSignals, getContextualAd } = require('./context-evaluation')
+import { ports, addresses } from '../config.js'
+import { computeInterestGroupSignals, interestGroupToAdParams } from './interest-group-evaluation.js'
+import { extractContextSignals, getContextualAd } from './context-evaluation.js'
 
-const { InterestGroupAd, ContextualBidResponse } = require('../turtledove-server/content/static/js/ad-partner-classes')
-
+const __dirname = path.resolve('./ad-network')
 const app = express()
 app.use(cors())
 app.use(bodyParser.json())

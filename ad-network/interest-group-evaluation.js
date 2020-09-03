@@ -1,5 +1,5 @@
-const { AdParams } = require('./ad-params')
-const adsDb = require('./ad-database')
+import { AdParams } from './ad-params.js'
+import { adsDb } from './ad-database.js'
 
 class InterestGroupSignals {
   constructor (owner, name, baseValue) {
@@ -29,7 +29,7 @@ function selectFromDb (interestGroupKey) {
  * @param {string} interestGroupKey
  * @returns {InterestGroupSignals}
  */
-function computeInterestGroupSignals (interestGroupKey) {
+export function computeInterestGroupSignals (interestGroupKey) {
   const adParamsEntry = selectFromDb(interestGroupKey)
   const owner = interestGroupKey.split('_')[0]
   const name = interestGroupKey.substring(owner.length + 1)
@@ -41,11 +41,9 @@ function computeInterestGroupSignals (interestGroupKey) {
  * @param {string} interestGroupKey
  * @returns {AdParams}
  */
-function interestGroupToAdParams (interestGroupKey) {
+export function interestGroupToAdParams (interestGroupKey) {
   const adParamsEntry = selectFromDb(interestGroupKey)
   if (adParamsEntry != null) {
     return new AdParams(interestGroupKey, adParamsEntry.img, adParamsEntry.href)
   }
 }
-
-module.exports = { interestGroupToAdParams, computeInterestGroupSignals }

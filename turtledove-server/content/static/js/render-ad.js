@@ -1,14 +1,12 @@
 import { Logger, saveWinner, testLocalStorageAvailability } from './common.js'
 import { fetchedAdsStorageKeyPrefix } from './storage-keys.js'
+import { Ad } from 'https://unpkg.com/turtledove-js-api@0.1.0/index.js'
 
 const contextualBidTimeout = 500
 
-class NoAd {
+class NoAd extends Ad {
   constructor () {
-    this.id = 'no-ad'
-    this.iframeContent = '<html><body><h1>NO AD</h1><p>TURTLEDOVE cannot select any ad for you :(</p></body></html>'
-    this.type = 'none'
-    this.adPartner = 'none'
+    super('no-ad', '<html><body><h1>NO AD</h1><p>TURTLEDOVE cannot select any ad for you.</p></body></html>', 'none', 'none')
   }
 }
 
@@ -34,11 +32,17 @@ function renderAd (ad) {
   about.style.width = '1em'
   about.style.height = '1em'
   about.style.textAlign = 'center'
-  const description = ad.type === 'contextual' ? '<p>This ad was chosen based on the context of the article you are currently in.</p>'
-    : `<p>This is an ${ad.type} ad. It was fetched for the group ${ad?.interestGroupSignals.name} from the site <a href="${ad?.interestGroupSignals?.owner}" target="_top">${ad?.interestGroupSignals?.owner}</a>.</p>`
+  let description
+  if (ad.type === 'contextual') {
+    description = '<p>This ad was chosen based on the context of the article you are currently in.</p>'
+  } else if (ad.type === 'none') {
+    description = '<p>An error during ad choosing occured.</p>'
+  } else {
+    description = `<p>This is an ${ad.type} ad. It was fetched for the group ${ad?.interestGroupSignals.name} from the site <a href="${ad?.interestGroupSignals?.owner}" target="_top">${ad?.interestGroupSignals?.owner}</a>.</p>`
+  }
   about.innerHTML = '<b>?</b><span class="tooltiptext">' +
     '<h4>Why I see this ad?</h4>' + description +
-    (ad.id != null ? `<b>Don't you like this ad?</b> Click <a href='/ad-remove?id=${ad.id}'>here</a> to delete.` : '') +
+    (ad.type === 'interest-group' ? `<b>Don't you like this ad?</b> Click <a href='/ad-remove?id=${ad.id}'>here</a> to delete.` : '') +
     '</span>\n'
   document.body.appendChild(iframe)
   document.body.appendChild(about)
@@ -157,6 +161,9 @@ function performAuction (bidResults) {
  */
 async function performOnDeviceAuction (request, logger, site) {
   const internalAuctions = Object.entries(request).map(([partner, bidRequest]) => partnerInternalAuction(partner, bidRequest, logger))
+  if (internalAuctions.length === 0) {
+    return Promise.resolve(new NoAd())
+  }
   return await Promise.allSettled(internalAuctions)
     .then((bidResults) => {
       const successfulBids = bidResults
