@@ -54,3 +54,29 @@ for (const product of ['scooters', 'bikes', 'rollerblades']) {
 sportEquipment.use('/static', statics)
 sportEquipment.listen(ports.sportEquipmentAdvertiserPort,
   () => console.log(`Advertiser app listening at http://localhost:${ports.sportEquipmentAdvertiserPort}`))
+
+const clothesStore = express()
+const colors = ['blue', 'red', 'green', 'purple']
+const products = ['jackets', 'scarfs', 'hats']
+
+clothesStore.get('/', async (req, res) => res.send(await getRenderedHtml('clothes.html.ejs', {
+  ...addresses,
+  products: products
+})))
+for (const product of products) {
+  clothesStore.get('/' + product, async (req, res) => res.send(await getRenderedHtml('clothes-category.html.ejs', {
+    ...addresses,
+    product: product,
+    colors: colors
+  })))
+  for (const color of colors) {
+    clothesStore.get('/' + product + '-' + color, async (req, res) => res.send(await getRenderedHtml('clothes-product.html.ejs', {
+      ...addresses,
+      color: color,
+      product: product
+    })))
+  }
+}
+clothesStore.use('/static', statics)
+clothesStore.listen(ports.clothesAdvertiserPort,
+  () => console.log(`Advertiser app listening at http://localhost:${ports.clothesAdvertiserPort}`))
