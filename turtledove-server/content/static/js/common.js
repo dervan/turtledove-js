@@ -1,6 +1,8 @@
-import { logsCountKey, logsKey, testStorageKey, winnersRegisterKey } from './storage-keys.js'
+import { logsCountKey, logsKey, tdVersionKey, testStorageKey, winnersRegisterKey } from './storage-keys.js'
+import { removeEverything } from './user-interface.js'
 
 export const logSeparator = '<|>'
+const turtledoveVersion = '1.1'
 
 class Log {
   constructor (text, site) {
@@ -65,6 +67,16 @@ export function testLocalStorageAvailability () {
   } catch (e) {
     console.error('Browser\'s localStorage has to be enabled, but is not accessible!')
     window.alert('Browser\'s localStorage has to be enabled, but is not accessible!')
+  }
+}
+
+export function verifyVersion () {
+  if (window.localStorage.getItem(tdVersionKey) !== turtledoveVersion) {
+    if (window.localStorage.getItem(logsKey) != null) {
+      window.alert('Incompatible storage of TURTLEDOVE detected. Demo was reset to continue to work')
+    }
+    removeEverything()
+    window.localStorage.setItem(tdVersionKey, turtledoveVersion)
   }
 }
 

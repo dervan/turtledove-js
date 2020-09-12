@@ -4,7 +4,7 @@ import express from 'express'
 import fs from 'fs'
 import path from 'path'
 
-import { computeInterestGroupSignals, interestGroupToAdParams } from './interest-group-evaluation.js'
+import { computeInterestGroupSignals, selectAds } from './interest-group-evaluation.js'
 import { extractContextSignals, getContextualAd } from './context-evaluation.js'
 import { ports, addresses } from '../config.js'
 
@@ -17,10 +17,9 @@ const __dirname = path.resolve('./ad-network')
  */
 async function fetchAds (interestGroupKey) {
   console.log(`Fetch ads for: ${interestGroupKey}`)
-  const adParams = interestGroupToAdParams(interestGroupKey)
-  const igSignals = computeInterestGroupSignals(interestGroupKey)
+  const adsParams = selectAds(interestGroupKey)
   const bidFunctionUrl = addresses.adPartner + '/static/bidding-function.js'
-  return [new InterestGroupAd(interestGroupKey, await adParams.generateAdHtml(), igSignals, bidFunctionUrl, addresses.adPartner)]
+  return await Promise.all(adsParams.map(async adPrototype => new InterestGroupAd(adPrototype.id, interestGroupKey, await adPrototype.generateAdHtml(), computeInterestGroupSignals(adPrototype), bidFunctionUrl, addresses.adPartner)))
 }
 
 /**

@@ -34,12 +34,10 @@ export function listAds () {
   for (const adPartner of listActivePartners()) {
     const partnerAdsKey = fetchedAdsStorageKeyPrefix + adPartner
     const partnerAdsMap = JSON.parse(window.localStorage.getItem(partnerAdsKey)) || {}
-    for (const [groupId, ad] of Object.entries(partnerAdsMap)) {
-      ads.push({
-        groupId: groupId,
-        adPartner: adPartner,
-        fetchedAd: ad
-      })
+    for (const [groupName, adList] of Object.entries(partnerAdsMap)) {
+      for (const [adId, ad] of Object.entries(adList)) {
+        ads.push(ad)
+      }
     }
   }
   return ads
@@ -81,13 +79,18 @@ export function removeFetchedAds () {
 /**
  * Removes one previously fetched ad from local storage
  */
-export function removeAd (id) {
-  for (const adPartner of listActivePartners()) {
-    const adPartnerKey = fetchedAdsStorageKeyPrefix + adPartner
-    const ads = JSON.parse(window.localStorage.getItem(adPartnerKey)) || {}
-    if (id in ads) {
-      delete ads[id]
-      window.localStorage.setItem(adPartnerKey, JSON.stringify(ads))
-    }
+export function removeAd (adPartner, groupName, adId) {
+  const adPartnerKey = fetchedAdsStorageKeyPrefix + adPartner
+  const ads = JSON.parse(window.localStorage.getItem(adPartnerKey)) || {}
+  if (groupName in ads && adId in ads[groupName]) {
+    delete ads[groupName][adId]
+    window.localStorage.setItem(adPartnerKey, JSON.stringify(ads))
   }
+}
+
+export function removeEverything () {
+  removeFetchedAds()
+  removeWinnersHistory()
+  removeLogs()
+  restartConsole()
 }
