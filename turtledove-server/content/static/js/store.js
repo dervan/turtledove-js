@@ -1,6 +1,6 @@
 import { activePartnersKey, fetchedAdsStorageKeyPrefix, interestGroupsStorageKey } from './storage-keys.js'
 
-import { getInterestGroupId, Logger, testLocalStorageAvailability } from './common.js'
+import { getInterestGroupId, Logger, verifyVersion, testLocalStorageAvailability } from './common.js'
 
 /* eslint-env browser */
 
@@ -12,7 +12,7 @@ import { getInterestGroupId, Logger, testLocalStorageAvailability } from './comm
  * @param logger
  */
 function storeInterestGroup (interestGroup, membershipTimeout, logger) {
-  // Load current user-groups of user
+  // Load current interest-groups of user
   const allInterestGroups = JSON.parse(window.localStorage.getItem(interestGroupsStorageKey)) || {}
   // Get its current groups of requested owner
   const ownerGroups = allInterestGroups[interestGroup.owner] || {}
@@ -20,6 +20,9 @@ function storeInterestGroup (interestGroup, membershipTimeout, logger) {
     logger.log('Already known group: ' + getInterestGroupId(interestGroup))
   } else {
     logger.log('New interest group: ' + getInterestGroupId(interestGroup))
+  }
+  if (interestGroup.timeout === undefined && membershipTimeout !== null) {
+    interestGroup.timeout = new Date(Date.now() + membershipTimeout)
   }
   ownerGroups[interestGroup.name] = interestGroup
   // warning: not thread safe, check local storage for that case
@@ -78,15 +81,15 @@ function updateActivePartners (addedReaders) {
  */
 function removeAds (interestGroup, logger) {
   const activePartners = JSON.parse(window.localStorage.getItem(activePartnersKey)) || []
-  const adKey = getInterestGroupId(interestGroup)
+  const interestGroupId = getInterestGroupId(interestGroup)
   for (const partner of activePartners) {
     const partnerKey = fetchedAdsStorageKeyPrefix + partner
     const localAds = JSON.parse(window.localStorage.getItem(partnerKey)) || {}
-    if (!(adKey in localAds)) {
+    if (!(interestGroupId in localAds)) {
       continue
     }
-    delete localAds[adKey]
-    logger.log(`Removed ad for group ${adKey}.`)
+    delete localAds[interestGroupId]
+    logger.log(`Removed ad for group ${interestGroupId}.`)
     window.localStorage.setItem(partnerKey, JSON.stringify(localAds))
   }
 }
@@ -95,7 +98,7 @@ function removeAds (interestGroup, logger) {
  * Returns an function that will download bidding function source code from a specified address
  * and put it inside an Ad for every ad on a list.
  *
- * @param {string} adKey
+ * @param {string} interestGroupId
  * @param {string} readerAdsKey
  * @param {Logger} logger
  */
@@ -112,23 +115,42 @@ function enrichAdsWithBiddingFunctions (logger) {
       }).catch(() => logger.log(`Cannot download bid function for ${ad.id}`))))
 }
 
+function randomId (length) {
+  const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  const n = s.length
+  const values = []
+  for (let i = 0; i < length; i++) {
+    values.push(s[Math.floor(Math.random() * n)])
+  }
+  return values.join()
+}
+
 /**
- * Returns an function that will save list of ads into localStorage
+ * Returns a function that will save list of ads into localStorage.
+ * Currently it is overwriting old ads for the same interest group!
  *
- * @param {string} adKey
+ * @param {string} interestGroupId
  * @param {string} readerAdsKey
  * @param {Logger} logger
  */
-function saveAds (adKey, readerAdsKey, logger) {
-  return interestBasedAds => {
-    for (const ad of interestBasedAds) {
-      if (ad !== null && ad.status === 'fulfilled' && ad.bidFunctionSrc !== null) {
-        const localAds = JSON.parse(window.localStorage.getItem(readerAdsKey)) || {}
-        localAds[adKey] = ad.value
-        logger.log(`Fetched new ad for group ${adKey}.`)
-        window.localStorage.setItem(readerAdsKey, JSON.stringify(localAds))
-      }
+function saveAds (interestGroupId, readerAdsKey, logger) {
+  return adFetchResults => {
+    const readerAds = JSON.parse(window.localStorage.getItem(readerAdsKey)) || {}
+    let igAds = readerAds[interestGroupId] || {}
+    if (igAds.id !== undefined) { // Legacy stored ad
+      const oldAd = igAds
+      igAds = {}
+      igAds[oldAd.id] = oldAd
     }
+    const newAds = adFetchResults
+      .filter(adResult => adResult !== null && adResult.status === 'fulfilled' && adResult.bidFunctionSrc !== null)
+      .map(adResult => adResult.value)
+    for (const ad of newAds) {
+      igAds[ad.id] = ad
+    }
+    readerAds[interestGroupId] = igAds
+    logger.log(`Fetched new ads for group ${interestGroupId}.`)
+    window.localStorage.setItem(readerAdsKey, JSON.stringify(readerAds))
   }
 }
 
@@ -141,16 +163,16 @@ function saveAds (adKey, readerAdsKey, logger) {
  */
 function fetchNewAds (interestGroup, logger) {
   const timeout = 1000
-  const adKey = getInterestGroupId(interestGroup)
+  const interestGroupId = getInterestGroupId(interestGroup)
 
   for (let i = 0; i < interestGroup.readers.length; i++) {
     const reader = interestGroup.readers[i]
     const controller = new AbortController()
-    fetch(`${reader}/fetch-ads?interest_group=${encodeURIComponent(adKey)}`, { signal: controller.signal })
+    fetch(`${reader}/fetch-ads?interest_group=${encodeURIComponent(interestGroupId)}`, { signal: controller.signal })
       .then(r => r.json())
       .then(enrichAdsWithBiddingFunctions(logger))
-      .then(saveAds(adKey, fetchedAdsStorageKeyPrefix + reader, logger))
-      .catch(reason => logger.log(`Request to ${reader} for ${adKey} failed: ${reason}`))
+      .then(saveAds(interestGroupId, fetchedAdsStorageKeyPrefix + reader, logger))
+      .catch(reason => logger.log(`Request to ${reader} for ${interestGroupId} failed: ${reason}`))
     setTimeout(() => controller.abort(), timeout)
   }
 }
@@ -172,4 +194,5 @@ window.onmessage = function (messageEvent) {
   }
   logger.save()
 }
+verifyVersion()
 testLocalStorageAvailability()

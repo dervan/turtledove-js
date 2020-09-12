@@ -53,16 +53,34 @@ function rgbToString (rgb) {
   return 'rgb(' + rgb.r + ', ' + rgb.g + ',' + rgb.b + ')'
 }
 
-export class AdParams {
-  constructor (adTarget, image, href) {
+class AdPrototype {
+  constructor (id, adTarget, baseValue, adPath) {
+    this.id = id
     this.adTarget = adTarget
+    this.adPath = adPath
+    this.baseValue = baseValue
+  }
+
+  async generateAdHtml () {
+    return await eta.renderFile(path.join(__dirname, this.adPath), this)
+  }
+}
+
+export class SimpleAdPrototype extends AdPrototype {
+  constructor (adTarget, image, href, baseValue) {
+    super(adTarget, adTarget, baseValue, '/content/ad.html.ejs')
     this.image = image
     this.href = href
     const rgb = hsvToRgb(Math.random(), 0.15, 0.95)
     this.background = rgbToString(rgb)
   }
+}
 
-  async generateAdHtml () {
-    return await eta.renderFile(`${__dirname}/content/ad.html.ejs`, this)
+export class ProductLevelAdPrototype extends AdPrototype {
+  constructor (adTarget, productsCount, baseValue) {
+    super(adTarget + '#PLTD', adTarget, baseValue, '/content/product-level-ad.html.ejs')
+    const rgb = hsvToRgb(Math.random(), 0.3, 0.95)
+    this.background = rgbToString(rgb)
+    this.productsCount = productsCount
   }
 }

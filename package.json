@@ -21,7 +21,7 @@
     "eta": "^1.2.2",
     "express": "^4.17.1",
     "nodemo": "^1.0.0",
-    "turtledove-js-api": "^1.0.0"
+    "turtledove-js-api": "^1.1.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

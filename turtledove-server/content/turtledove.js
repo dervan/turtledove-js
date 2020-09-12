@@ -8,12 +8,12 @@ import { RenderingRequest, StoreRequest } from './static/js/iframe-api.js'
  *  In this simulation all data (interest group membership, fetched ads etc) are stored in window.localStorage of
  *  domain <%= it.turtledoveHost %>. This is the cause of an iframe-based construction of the whole simulation.
  */
-
 const tdDemoAddress = '<%= it.turtledoveHost %>'
 const storeIframeId = 'td-demo-store'
 const storeQueue = []
 let storeLoaded = false
 let logsEnabled = false
+const productLevelEnabled = false
 
 /**
  * Adds and initializes an iframe that later is used to save TD data to localStorage.
@@ -69,7 +69,7 @@ function joinAdInterestGroup (group, membershipTimeout) {
  * contextual bid request for it (custom object, as specified by ad partner)
  */
 function renderAds (iframeId, contextualBidRequests) {
-  const renderingRequest = new RenderingRequest(contextualBidRequests, logsEnabled)
+  const renderingRequest = new RenderingRequest(contextualBidRequests, logsEnabled, productLevelEnabled)
   const turtledoveRenderAdSrc = tdDemoAddress + '/render-ad'
   const ad = document.getElementById(iframeId)
   if (ad === null) {
@@ -88,8 +88,9 @@ function renderAds (iframeId, contextualBidRequests) {
  * Initializes a demo of TURTLEDOVE. Allows to call currently unavailable methods
  * of Navigator that in the future will be a part of browser API.
  *
- * @param options - dict that allows to configure TURTLEDOVE simulation. Currently it accepts only one key:
+ * @param options - dict that allows to configure TURTLEDOVE simulation. Currently it accepts two keys:
  *                * logs: boolean - if set to true adds an turtledove icon and a log that shows last TURTLEDOVE demo actions
+ *                * productLevel: boolean - if set to true enables Product-Level extension of TURTLEDOVE demo.
  */
 export function initTurtledove (options) {
   if (options.logs) {
@@ -107,9 +108,18 @@ export function initTurtledove (options) {
  * The class describing an interest group.
  */
 export class InterestGroup {
-  constructor (owner, name, readers) {
+  constructor (owner, name, readers, products) {
     this.owner = owner // site to which this group refers to,
     this.name = name // identifier of this group
     this.readers = readers // ad networks that will be asked to provide an ad for this group
+    this.products = products // products associated with this InterestGroup in this browser. Used only in product-level TURTLEDOVE.
+  }
+
+  setTimeout (membershipTimeoutMs) {
+    this.timeout = new Date(Date.now() + membershipTimeoutMs)
+  }
+
+  static fromJson (jsonString) {
+
   }
 }

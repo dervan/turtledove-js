@@ -22,12 +22,16 @@
   import { removeAd } from './static/js/user-interface.js'
   import { Logger } from './static/js/common.js'
 
-  let firstArg = window.location.search.substr(1)
-  if (firstArg.startsWith('id=')) {
-    const id = firstArg.substring(3)
-    let logger = new Logger(window.location.protocol + '//' + window.location.host, true, false)
-    logger.log('Remove ad with id ' + id)
-    removeAd(id)
+  let params = (new URL(document.location)).searchParams
+  const adPartner = params.get('adPartner')
+  const groupName = params.get('groupName')
+  const id = params.get('id')
+  let logger = new Logger(window.location.protocol + '//' + window.location.host, true, false)
+  if (adPartner !== null && groupName !== null && id !== null) {
+    removeAd(adPartner, groupName, id)
+    logger.log(`Remove ${adPartner} ad for ${groupName} with id ${id}`)
+  } else {
+    logger.log(`Incomplete request to remove ${adPartner} ad for ${groupName} with id ${id}`)
   }
 </script>
 <div class="container">

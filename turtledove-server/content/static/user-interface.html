@@ -38,13 +38,10 @@
 </head>
 <body>
 <script type="module">
-  import { removeFetchedAds, removeWinnersHistory, removeLogs, restartConsole } from './static/js/user-interface.js'
+  import {removeEverything } from './static/js/user-interface.js'
 
   document.getElementById('clean-button').onclick = () => {
-    removeFetchedAds()
-    removeWinnersHistory()
-    removeLogs()
-    restartConsole()
+    removeEverything()
     location.reload()
   }
 </script>
@@ -97,31 +94,31 @@
       }
       const table = document.getElementById('fetched-ads')
 
-      for (const adDescription of listAds()) {
+      for (const ad of listAds()) {
         const row = table.insertRow()
         const groupId = row.insertCell()
         groupId.innerHTML = `Group ID:<br/>
-                 <b>${adDescription.groupId}</b><br/>
+                 <b>${ad.groupName}</b><br/>
                  Ad partner: <br/>
-                 ${adDescription.adPartner}<br/>`
+                 ${ad.adPartner}<br/>`
         let adRemoveButton = document.createElement('button')
         adRemoveButton.textContent = 'Remove'
         adRemoveButton.onclick = () => {
-          removeAd(adDescription.groupId)
+          removeAd(ad.adPartner, ad.groupName, ad.id)
           window.location.reload()
         }
         groupId.appendChild(adRemoveButton)
         const iframe = document.createElement('iframe')
-        iframe.srcdoc = adDescription.fetchedAd.iframeContent
+        iframe.srcdoc = ad.iframeContent
         iframe.height = '250px'
         iframe.width = '300px'
         iframe.scrolling = 'no'
-        const ad = row.insertCell()
-        ad.appendChild(iframe)
+        const adCell = row.insertCell()
+        adCell.appendChild(iframe)
         const bidFunction = row.insertCell()
-        bidFunction.innerHTML = '<pre>' + js_beautify(adDescription.fetchedAd.bidFunction, formatterOptions) + '</pre>'
+        bidFunction.innerHTML = '<pre>' + js_beautify(ad.bidFunction, formatterOptions) + '</pre>'
         const igSignals = row.insertCell()
-        igSignals.innerHTML = '<pre>' + js_beautify(JSON.stringify(adDescription.fetchedAd.interestGroupSignals)) + '</pre>'
+        igSignals.innerHTML = '<pre>' + js_beautify(JSON.stringify(ad.interestGroupSignals)) + '</pre>'
       }
     </script>
 

@@ -5,7 +5,8 @@ export const ports = {
   planesPublisherPort: 8001,
   animalsAdvertiserPort: 8002,
   transportAdvertiserPort: 8003,
-  sportEquipmentAdvertiserPort: 8004
+  sportEquipmentAdvertiserPort: 8004,
+  clothesAdvertiserPort: 8005
 }
 
 const addressesVariants = {
@@ -16,7 +17,8 @@ const addressesVariants = {
     planesPublisher: 'https://aboutplanes.pl',
     animalsAdvertiser: 'https://catordog.pl',
     transportAdvertiser: 'https://trainorplane.pl',
-    sportEquipmentAdvertiser: 'https://sportequipment.pl'
+    sportEquipmentAdvertiser: 'https://sportequipment.pl',
+    clothesAdvertiser: 'https://coolclothes.pl'
   },
   local: {
     turtledoveHost: 'http://localhost:' + ports.turtledovePort,
@@ -25,7 +27,8 @@ const addressesVariants = {
     planesPublisher: 'http://localhost:' + ports.planesPublisherPort,
     animalsAdvertiser: 'http://localhost:' + ports.animalsAdvertiserPort,
     transportAdvertiser: 'http://localhost:' + ports.transportAdvertiserPort,
-    sportEquipmentAdvertiser: 'http://localhost:' + ports.sportEquipmentAdvertiserPort
+    sportEquipmentAdvertiser: 'http://localhost:' + ports.sportEquipmentAdvertiserPort,
+    clothesAdvertiser: 'http://localhost:' + ports.clothesAdvertiserPort
   }
 }
 export const addresses = process.argv[2] === 'prod' ? addressesVariants.web : addressesVariants.local
