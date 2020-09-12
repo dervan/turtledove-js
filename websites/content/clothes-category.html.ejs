@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Cool clothes - <%= it.product %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background: #b4ffb5;
+        }
+
+        img {
+            width: 80%;
+        }
+        h5 { 
+            font-size: 1.2em;
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+  import { initTurtledove, InterestGroup } from "<%= it.turtledoveHost %>/turtledove.js"
+
+  initTurtledove({ logs: true })
+</script>
+
+<div class="container centered">
+    <h3>Check out our <%= it.product %>!</h3>
+    <div class="container">
+      <% it.colors.forEach(function(color) { %>
+      <a href='./<%= it.product + '-' + color %>'>
+        <div class="three columns centered">
+            <h5><%= color + ' ' + it.product %></h5>
+            <img src="./static/images/<%= it.product + '-' + color %>.svg" alt="<%= it.product + ' ' + color %> image"><br>
+        </div>
+      </a>
+      <% }) %>
+    </div>
+    <p>
+    <h3>
+        <a href="./">Return to main page</a>
+    </h3>
+    </p>
+</div>
+</body>
+</html>

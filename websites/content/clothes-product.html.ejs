@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Cool clothes - <%= it.color %> <%= it.product %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background: #b4ffb5;
+        }
+        h5 {
+          text-transform: capitalize;
+        }
+        img {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+<script type="module">
+  import { initTurtledove, InterestGroup } from '<%= it.turtledoveHost %>/turtledove.js'
+  import {saveViewed} from './static/js/retargeting.js'
+
+  const offersInInterestGroup = 3
+  const defaultOffers = ['hats-red', 'hats-blue', 'scarfs-red']
+  function processOffers(offers) {
+    function isFirstOccurence(value, index, self) {
+      return self.indexOf(value) === index;
+    }
+    const uniq = offers.filter(isFirstOccurence)
+    let selected
+    if (uniq.length >= offersInInterestGroup) {
+      selected = uniq.slice(0, offersInInterestGroup)
+    } else {
+      selected = defaultOffers.slice(offersInInterestGroup - uniq.length).concat(uniq)
+    }
+    let interestGroup = new InterestGroup(window.location.host, 'visitor', ['<%= it.adPartner %>'], selected)
+    window.navigator.joinAdInterestGroup(interestGroup, 2592000)
+  }
+
+  initTurtledove({ logs: true })
+
+  let allViewed = saveViewed('<%= it.product %>-<%= it.color %>')
+  processOffers(allViewed)
+</script>
+
+<div class="container centered">
+  <h3>Check out our <%= it.color %> <%= it.product %>!</h3>
+    <div class="container">
+            <h5><%= it.color %> <%= it.product %></h5>
+            <img src="./static/images/<%= it.product %>-<%= it.color %>.svg" alt="<%= it.color %> <%= it.product %> image"><br>
+    </div>
+    <p>
+    <h3>
+      <a href="./<%= it.product %>">Return to listing</a>
+    </h3>
+    </p>
+</div>
+</body>
+</html>

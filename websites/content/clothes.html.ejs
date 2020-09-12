@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Cool clothes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./static/css/complete.css">
+    <link rel="icon" type="image/png" href="./static/images/favicon.png">
+    <style>
+        body {
+            background: #b4ffb5;
+        }
+        h3 {
+          text-transform: capitalize;
+        }
+        img {
+            width: 60%;
+        }
+    </style
+</head>
+
+<body>
+<script type="module">
+  import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
+
+  initTurtledove({ logs: true })
+</script>
+<div class="container">
+    <h3>Shop with clothes</h3>
+    <div class="row">
+      <% it.products.forEach(function(product) { %>
+        <div class="one-third column centered">
+          <a href="./<%= product %>">
+                <h3><%= product %></h3>
+                <img src="./static/images/<%= product %>-blue.svg" alt="<%= product %>">
+            </a>
+        </div>
+        <% }) %>
+        <div class="twelve columns">
+            <p>
+              This website is a dummy <b>advertiser</b> that is doing a simple retargeting based on Product-Level TURTLEDOVE.
+                Every time someone enters an offer site the list of last seen offers in first-party storage is updated and on its base offers for InterestGroup are calculated.
+            </p>
+            <p>If you want to choose between trains and plains you should check out
+                <a href="<%= it.transportAdvertiser %>">this website</a>. Or if you'd like to choose between cats and
+                dogs you have to check out <a href="<%= it.animalsAdvertiser %>"> another site</a>.
+                Would you like to see some ads? Visit <a
+                            href="<%= it.animalsPublisher %>">a website about animals</a> or <a
+                            href="<%= it.planesPublisher %>">a website about planes</a>.
+            </p>
+            <p>
+                To check out more details about the state of TURTLEDOVE simulation on your browser you can visit its
+                <a href="<%= it.turtledoveHost %>">user interface</a>.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
