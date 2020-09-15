@@ -84,3 +84,15 @@ export class ProductLevelAdPrototype extends AdPrototype {
     this.productsCount = productsCount
   }
 }
+
+export class ProductPrototype {
+  constructor (owner, product) {
+    this.owner = owner
+    this.product = product
+    this.title = product.replace('-', ' ')
+  }
+
+  async generateHtml () {
+    return await eta.renderFile(path.join(__dirname, '/content/product.html.ejs'), this)
+  }
+}

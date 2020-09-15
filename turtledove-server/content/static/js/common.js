@@ -2,7 +2,7 @@ import { logsCountKey, logsKey, tdVersionKey, testStorageKey, winnersRegisterKey
 import { removeEverything } from './user-interface.js'
 
 export const logSeparator = '<|>'
-const turtledoveVersion = '1.1'
+const turtledoveVersion = '1.1.1'
 
 class Log {
   constructor (text, site) {

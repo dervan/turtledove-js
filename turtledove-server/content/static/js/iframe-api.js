@@ -1,9 +1,10 @@
 export class StoreRequest {
-  constructor (type, interestGroup, membershipTimeout, loggingEnabled) {
+  constructor (type, interestGroup, membershipTimeout, loggingEnabled, productLevelEnabled) {
     this.type = type
     this.interestGroup = interestGroup
     this.membershipTimeout = membershipTimeout
     this.loggingEnabled = loggingEnabled
+    this.productLevelEnabled = productLevelEnabled
   }
 }
 

@@ -16,9 +16,9 @@ function generateAd (address, groupName, img, href, baseValue) {
   return new SimpleAdPrototype(fullName, img, href, baseValue)
 }
 
-function generateProductLevelAd (address, groupName, productsCount) {
+function generateProductLevelAd (address, groupName, productsCount, baseValue) {
   const fullName = extractHost(address) + '_' + groupName
-  return new ProductLevelAdPrototype(fullName, productsCount)
+  return new ProductLevelAdPrototype(fullName, productsCount, baseValue)
 }
 
 export const adsDb = [
