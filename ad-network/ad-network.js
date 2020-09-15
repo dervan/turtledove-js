@@ -1,4 +1,5 @@
-import { generateAdNetworkAppAsync, InterestGroupAd, ContextualBidResponse } from 'turtledove-js-api'
+import { generateAdNetworkAppAsync, InterestGroupAd, ProductLevelInterestGroupAd, ContextualBidResponse } from 'turtledove-js-api'
+import { ProductPrototype } from './ad-params.js'
 import express from 'express'
 
 import fs from 'fs'
@@ -10,6 +11,19 @@ import { ports, addresses } from '../config.js'
 
 const __dirname = path.resolve('./ad-network')
 
+function convertToAd (interestGroupKey, bidFunctionUrl) {
+  return async adPrototype => {
+    const html = await adPrototype.generateAdHtml()
+    const signals = computeInterestGroupSignals(adPrototype)
+    if (adPrototype.productsCount !== undefined) {
+      const productsOwner = interestGroupKey.split('_')[0]
+      return new ProductLevelInterestGroupAd(adPrototype.id, interestGroupKey, html, signals, bidFunctionUrl, productsOwner, adPrototype.productsCount, addresses.adPartner)
+    } else {
+      return new InterestGroupAd(adPrototype.id, interestGroupKey, html, signals, bidFunctionUrl, addresses.adPartner)
+    }
+  }
+}
+
 /**
  * For given InterestGroup returns list of prepared InterestGroupAds, in the format described by TURTLEDOVE.
  * @param {string} interestGroupKey
@@ -19,7 +33,7 @@ async function fetchAds (interestGroupKey) {
   console.log(`Fetch ads for: ${interestGroupKey}`)
   const adsParams = selectAds(interestGroupKey)
   const bidFunctionUrl = addresses.adPartner + '/static/bidding-function.js'
-  return await Promise.all(adsParams.map(async adPrototype => new InterestGroupAd(adPrototype.id, interestGroupKey, await adPrototype.generateAdHtml(), computeInterestGroupSignals(adPrototype), bidFunctionUrl, addresses.adPartner)))
+  return await Promise.all(adsParams.map(convertToAd(interestGroupKey, bidFunctionUrl)))
 }
 
 /**
@@ -35,7 +49,17 @@ async function fetchContextualBid (contextualBidRequest) {
   return new ContextualBidResponse(contextSignals, evaluatedContextualAd?.contextualAd, evaluatedContextualAd?.bidValue)
 }
 
-const app = generateAdNetworkAppAsync(fetchAds, fetchContextualBid)
+async function fetchProducts (owner, product) {
+  console.log(`Fetch product ${product} for: ${owner}`)
+  const productPrototype = new ProductPrototype(owner, product)
+  return {
+    owner: owner,
+    product: product,
+    iframeContent: await productPrototype.generateHtml()
+  }
+}
+
+const app = generateAdNetworkAppAsync(fetchAds, fetchContextualBid, fetchProducts)
 app.use('/static', express.static(`${__dirname}/content/static`))
 app.get('/', (req, res) => {
   res.set('Content-Type', 'text/html')

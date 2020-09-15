@@ -13,7 +13,7 @@ const storeIframeId = 'td-demo-store'
 const storeQueue = []
 let storeLoaded = false
 let logsEnabled = false
-const productLevelEnabled = false
+let productLevelEnabled = false
 
 /**
  * Adds and initializes an iframe that later is used to save TD data to localStorage.
@@ -57,7 +57,7 @@ function leaveAdInterestGroup (group) {
  * @param {number} membershipTimeout
  */
 function joinAdInterestGroup (group, membershipTimeout) {
-  storeQueue.push(new StoreRequest('store', group, membershipTimeout, logsEnabled))
+  storeQueue.push(new StoreRequest('store', group, membershipTimeout, logsEnabled, productLevelEnabled))
   handleStoreQueue()
 }
 
@@ -96,6 +96,9 @@ export function initTurtledove (options) {
   if (options.logs) {
     logsEnabled = true
     enableLog()
+  }
+  if (options.productLevel) {
+    productLevelEnabled = true
   }
   addStoreIframe()
 

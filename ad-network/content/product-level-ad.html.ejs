@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ad</title>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            background: <%= it.background %>;
+            text-align: center;
+            font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #222; 
+        }
+
+        a:link {
+            text-decoration: inherit;
+            color: inherit;
+            cursor: auto;
+        }
+
+        a:visited {
+            text-decoration: inherit;
+            color: inherit;
+            cursor: auto;
+        }
+
+        iframe {
+            width: <%= 280/it.productsCount - 2 %>px;
+            height: 180px;
+            display: inline-block;
+            padding: 0;
+            margin: 0;
+            border-width: 1px;
+            overflow: hidden;
+        }
+        .wrapper {
+            width: 280px;
+            display: inline-block;
+            font-size: 0;
+        }
+    </style>
+</head>
+<body>
+<script>
+    window.onmessage = function (messageEvent) {
+        let data = messageEvent.data
+        if (data.productsCount !== <%= it.productsCount %> ) {
+            console.log("Invalid message received!")
+        } else {
+            let id = 0
+            for(const product of data.products || []) {
+                document.getElementById('product' + id).srcdoc = product
+                id++
+            }
+        }
+    }
+</script>
+    <div>
+        <h3>Ad for <%= it.adTarget %></h3>
+        <div class='wrapper'>
+            <% for(let i=0; i < it.productsCount; i++) { %>
+                <iframe id="product<%= i %>"></iframe>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { activePartnersKey, fetchedAdsStorageKeyPrefix, interestGroupsStorageKey } from './storage-keys.js'
+import { activePartnersKey, fetchedAdsStorageKeyPrefix, fetchedProductsStorageKeyPrefix, interestGroupsStorageKey } from './storage-keys.js'
 
 import { getInterestGroupId, Logger, verifyVersion, testLocalStorageAvailability } from './common.js'
 
@@ -14,19 +14,16 @@ import { getInterestGroupId, Logger, verifyVersion, testLocalStorageAvailability
 function storeInterestGroup (interestGroup, membershipTimeout, logger) {
   // Load current interest-groups of user
   const allInterestGroups = JSON.parse(window.localStorage.getItem(interestGroupsStorageKey)) || {}
-  // Get its current groups of requested owner
-  const ownerGroups = allInterestGroups[interestGroup.owner] || {}
-  if (interestGroup.name in ownerGroups) {
-    logger.log('Already known group: ' + getInterestGroupId(interestGroup))
+  const groupId = getInterestGroupId(interestGroup)
+  if (interestGroup.name in allInterestGroups) {
+    logger.log('Already known group: ' + groupId)
   } else {
-    logger.log('New interest group: ' + getInterestGroupId(interestGroup))
+    logger.log('New interest group: ' + groupId)
   }
   if (interestGroup.timeout === undefined && membershipTimeout !== null) {
     interestGroup.timeout = new Date(Date.now() + membershipTimeout)
   }
-  ownerGroups[interestGroup.name] = interestGroup
-  // warning: not thread safe, check local storage for that case
-  allInterestGroups[interestGroup.owner] = ownerGroups
+  allInterestGroups[groupId] = interestGroup
   window.localStorage.setItem(interestGroupsStorageKey, JSON.stringify(allInterestGroups))
 }
 
@@ -133,8 +130,9 @@ function randomId (length) {
  * @param {string} readerAdsKey
  * @param {Logger} logger
  */
-function saveAds (interestGroupId, readerAdsKey, logger) {
+function saveAds (interestGroupId, reader, logger) {
   return adFetchResults => {
+    const readerAdsKey = fetchedAdsStorageKeyPrefix + reader
     const readerAds = JSON.parse(window.localStorage.getItem(readerAdsKey)) || {}
     let igAds = readerAds[interestGroupId] || {}
     if (igAds.id !== undefined) { // Legacy stored ad
@@ -171,8 +169,43 @@ function fetchNewAds (interestGroup, logger) {
     fetch(`${reader}/fetch-ads?interest_group=${encodeURIComponent(interestGroupId)}`, { signal: controller.signal })
       .then(r => r.json())
       .then(enrichAdsWithBiddingFunctions(logger))
-      .then(saveAds(interestGroupId, fetchedAdsStorageKeyPrefix + reader, logger))
+      .then(saveAds(interestGroupId, reader, logger))
       .catch(reason => logger.log(`Request to ${reader} for ${interestGroupId} failed: ${reason}`))
+    setTimeout(() => controller.abort(), timeout)
+  }
+}
+
+function saveProduct (owner, productName, reader, logger) {
+  return (product) => {
+    const readerProdKey = fetchedProductsStorageKeyPrefix + reader
+    const readerProducts = JSON.parse(window.localStorage.getItem(readerProdKey)) || {}
+    const ownerProducts = readerProducts[owner] || {}
+    ownerProducts[productName] = product
+    readerProducts[owner] = ownerProducts
+    window.localStorage.setItem(readerProdKey, JSON.stringify(readerProducts))
+    logger.log(`Saved new product ${productName} from ${owner} (through partner ${reader})`)
+  }
+}
+
+/**
+ * Performs a call to fetch-ads. Due to demo simplicity, it is performed always after adding to a user group
+ * (on the contrary to standard TURTLEDOVE, where this call will be asynchronous)
+ *
+ * @param {InterestGroup} interestGroup
+ * @param {Logger} logger
+ */
+function fetchNewProducts (interestGroup, logger) {
+  const timeout = 5000
+  console.log('Fetch new products.')
+
+  for (let i = 0; i < interestGroup.readers.length; i++) {
+    const reader = interestGroup.readers[i]
+    const controller = new AbortController()
+    interestGroup.products.map(product =>
+      fetch(`${reader}/fetch-products?owner=${encodeURIComponent(interestGroup.owner)}&product=${encodeURIComponent(product)}`, { signal: controller.signal })
+        .then(r => r.json())
+        .then(saveProduct(interestGroup.owner, product, reader, logger))
+        .catch(reason => logger.log(`Request to ${reader} for ${product} failed: ${reason}`)))
     setTimeout(() => controller.abort(), timeout)
   }
 }
@@ -180,12 +213,16 @@ function fetchNewAds (interestGroup, logger) {
 window.onmessage = function (messageEvent) {
   const storeRequest = messageEvent.data
   const interestGroup = storeRequest.interestGroup
+  const productLevelEnabled = storeRequest.productLevelEnabled
 
   const logger = new Logger(messageEvent.origin, storeRequest.loggingEnabled)
 
   if (storeRequest.type === 'store') {
     storeInterestGroup(interestGroup, storeRequest.membershipTimeout, logger)
     fetchNewAds(interestGroup, logger)
+    if (productLevelEnabled) {
+      fetchNewProducts(interestGroup, logger)
+    }
     updateActivePartners(interestGroup.readers)
   } else if (storeRequest.type === 'remove') {
     removeInterestGroup(interestGroup, logger)

@@ -41,7 +41,7 @@
     window.navigator.joinAdInterestGroup(interestGroup, 2592000)
   }
 
-  initTurtledove({ logs: true })
+  initTurtledove({ logs: true, productLevel: true })
 
   let allViewed = saveViewed('<%= it.product %>-<%= it.color %>')
   processOffers(allViewed)
@@ -50,8 +50,8 @@
 <div class="container centered">
   <h3>Check out our <%= it.color %> <%= it.product %>!</h3>
     <div class="container">
-            <h5><%= it.color %> <%= it.product %></h5>
-            <img src="./static/images/<%= it.product %>-<%= it.color %>.svg" alt="<%= it.color %> <%= it.product %> image"><br>
+        <h5><%= it.color %> <%= it.product %></h5>
+        <img src="./static/images/<%= it.product %>-<%= it.color %>.svg" alt="<%= it.color %> <%= it.product %> image"><br>
     </div>
     <p>
     <h3>

@@ -61,7 +61,7 @@
 
   const adPolicy = new AdPolicy(['ship', 'train', 'car', 'bike'])
 
-  initTurtledove({ logs: true })
+  initTurtledove({ logs: true, productLevel: true })
   window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextualBidRequest('planes', new Placement('left'), adPolicy) })
   window.navigator.renderAds('td-ad-right', { '<%= it.adPartner %>': new ContextualBidRequest('planes', new Placement('right'), adPolicy) })
 </script>

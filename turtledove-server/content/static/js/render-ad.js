@@ -1,5 +1,5 @@
 import { Logger, saveWinner, testLocalStorageAvailability } from './common.js'
-import { fetchedAdsStorageKeyPrefix } from './storage-keys.js'
+import { fetchedAdsStorageKeyPrefix, fetchedProductsStorageKeyPrefix, interestGroupsStorageKey } from './storage-keys.js'
 import { Ad } from 'https://unpkg.com/turtledove-js-api@1.0.0/classes.js'
 
 const contextualBidTimeout = 500
@@ -51,6 +51,34 @@ function renderAd (ad) {
     '<h4>Why I see this ad?</h4>' + description + '</span>'
   document.body.appendChild(iframe)
   document.body.appendChild(about)
+
+  if (ad.productsCount !== undefined) {
+    const products = readProductsForInterestGroup(ad.groupName, ad.productsOwner, ad.productsCount, ad.adPartner)
+    iframe.onload = () => {
+      iframe.contentWindow.postMessage({ productsCount: ad.productsCount, products: shuffle(products.map(p => p.iframeContent)) }, '*')
+    }
+  }
+}
+function shuffle (array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = array[i]
+    array[i] = array[j]
+    array[j] = tmp
+  }
+  return array
+}
+function readProductsForInterestGroup (groupName, productsOwner, productsCount, adPartner) {
+  const products = []
+  const interestGroups = JSON.parse(window.localStorage.getItem(interestGroupsStorageKey)) || {}
+  const interestGroup = interestGroups[groupName]
+  const productIds = interestGroup.products || []
+  const partnerProducts = JSON.parse(window.localStorage.getItem(fetchedProductsStorageKeyPrefix + adPartner)) || {}
+  const ownerProducts = partnerProducts[productsOwner]
+  for (const productId of productIds) {
+    products.push(ownerProducts[productId])
+  }
+  return products
 }
 
 /**
@@ -130,12 +158,13 @@ function selectBest (partnerName, contextualAd, contextualBidValue, contextSigna
  * @param {Logger} logger
  * @returns {Promise<PartnerAdProposition>}
  */
-function partnerInternalAuction (partner, request, logger) {
+function partnerInternalAuction (partner, request, productLevelEnabled, logger) {
   const partnerAdsMap = JSON.parse(window.localStorage.getItem(fetchedAdsStorageKeyPrefix + partner))
   const fetchedAds = Object.entries(partnerAdsMap || {}).flatMap(([groupName, ads]) => Object.keys(ads).map(k => ads[k]))
+  const validAds = productLevelEnabled !== true ? fetchedAds.filter(ad => ad.productsCount === undefined) : fetchedAds
   return doContextualBid(request, partner, contextualBidTimeout, logger) // evaluate context only
-    .then(ctx => selectBest(partner, ctx.contextualAd, ctx.contextualBidValue, ctx.contextSignals, fetchedAds, logger), // evaluate stored ads
-      rejectReason => selectBest(partner, null, null, null, fetchedAds, logger)) // if context evaluation failed, try without it
+    .then(ctx => selectBest(partner, ctx.contextualAd, ctx.contextualBidValue, ctx.contextSignals, validAds, logger), // evaluate stored ads
+      rejectReason => selectBest(partner, null, null, null, validAds, logger)) // if context evaluation failed, try without it
 }
 
 /**
@@ -164,8 +193,9 @@ function performAuction (bidResults) {
  * @param {string} site
  * @returns {Promise<Ad>}
  */
-async function performOnDeviceAuction (request, logger, site) {
-  const internalAuctions = Object.entries(request).map(([partner, bidRequest]) => partnerInternalAuction(partner, bidRequest, logger))
+async function performOnDeviceAuction (request, productLevelEnabled, logger, site) {
+  const internalAuctions = Object.entries(request)
+    .map(([partner, bidRequest]) => partnerInternalAuction(partner, bidRequest, productLevelEnabled, logger))
   if (internalAuctions.length === 0) {
     return Promise.resolve(new NoAd())
   }
@@ -195,6 +225,6 @@ window.onmessage = async function (messageEvent) {
 
   const bidRequests = renderingRequest.contextualBidRequests // This is a map from ad-network to custom ad-network bid request object!
   logger.log('Perform an auction for the placement: ' + JSON.stringify(Object.values(bidRequests)[0]?.placement))
-  renderAd(await performOnDeviceAuction(bidRequests, logger, messageEvent.origin))
+  renderAd(await performOnDeviceAuction(bidRequests, renderingRequest.productLevelEnabled, logger, messageEvent.origin))
 }
 testLocalStorageAvailability()

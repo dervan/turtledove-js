@@ -1,0 +1,29 @@
+<html>
+    <head>
+<style>
+        a:link {
+            text-decoration: inherit;
+            color: inherit;
+            cursor: auto;
+        }
+
+        a:visited {
+            text-decoration: inherit;
+            color: inherit;
+            cursor: auto;
+        }
+        .wrapper {
+            width: 100%;
+            height: 100%;
+        }
+</style>
+    </head>
+    <body>
+        <a href='http://<%= it.owner + '/' + it.product %>' target="_top">
+            <div class='wrapper'>
+                <img width='100%'src='http://<%= it.owner %>/static/images/<%= it.product %>.svg'/>
+                <h5 style='text-transform: capitalize'><%= it.title %></h5>
+            </div>
+        </a>
+    </body>
+</html>
