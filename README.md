@@ -8,11 +8,12 @@ To use our implementation just import a file `turtledove.js` and call `initTurtl
 ```
 import { initTurtledove } from "https://turtledove.pl/turtledove.js"
 
-initTurtledove({ logs: true })
+initTurtledove({ logs: true, productLevel: true })
 ```
 
-Initializing function consumes a config object which recognizes one key:
+Initializing function consumes a config object which recognizes two keys:
 - `logs`- if set to `true`, adds a button to open a message log that gives a bit of insight into implementation internals.
+- `productLevel`- if set to `true`, enables products fetching and admits product-level ads to auctions. To read more about proposal of Product-Level TURTLEDOVE check out https://github.com/jonasz/product_level_turtledove
 
 Calling `initTurtledove` overwrites functions `window.navigator.renderAds`, `window.navigator.joinAdInterestGroup` and `window.navigator.leaveAdInterestGroup`, that in the future would be provided by a browser.
 
@@ -40,6 +41,7 @@ TURTLEDOVE ads can be seen in two example publishers:
 
 ## Advertisers
 We wrote three web pages that are creating AdInterestGroups:
+- https://coolclothes.pl - a shop that is performing product-level retargeting.
 - https://sportequipment.pl - a shop which is performing naive retargeting by showing ads only for last viewed category.
 - https://catordog.pl - an advertiser that asks you if you like cats or dogs and afterward shows you its ads promoting
 either cat or dog food. If you didn't declare anything, it will show you a generic ad for its visitors. Quite the opposite,

@@ -1,4 +1,4 @@
-export function saveViewed (productName) {
+export function saveViewedProduct (productName) {
   const viewedKey = 'viewedOffers'
   const sizeLimit = 8
   let viewedOffers = JSON.parse(window.localStorage.getItem(viewedKey)) || []

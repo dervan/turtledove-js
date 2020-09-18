@@ -25,13 +25,15 @@
         }
 
         iframe {
-            width: <%= 280/it.productsCount - 2 %>px;
-            height: 180px;
+            width: <%= 280/it.productsCount - 10 %>px;
+            height: 140px;
             display: inline-block;
             padding: 0;
-            margin: 0;
-            border-width: 1px;
+            margin: 5px;
+            border-radius: 5px;
+            border-width: 0;
             overflow: hidden;
+            background-color: rgba(128,128, 128, 0.1); 
         }
         .wrapper {
             width: 280px;
@@ -49,7 +51,7 @@
         } else {
             let id = 0
             for(const product of data.products || []) {
-                document.getElementById('product' + id).srcdoc = product
+                document.getElementById('product' + id).srcdoc = product || "<p>Not found</p>"
                 id++
             }
         }
@@ -59,7 +61,7 @@
         <h3>Ad for <%= it.adTarget %></h3>
         <div class='wrapper'>
             <% for(let i=0; i < it.productsCount; i++) { %>
-                <iframe id="product<%= i %>"></iframe>
+                <iframe id="product<%= i %>" scrollable='no'></iframe>
             <% } %>
         </div>
     </div>

@@ -1,5 +1,5 @@
 import { ContextualAd } from 'turtledove-js-api'
-import { SimpleAdPrototype } from './ad-params.js'
+import { SimpleAdPrototype } from './ad-prototypes.js'
 import { addresses } from '../config.js'
 
 class ContextSignals {

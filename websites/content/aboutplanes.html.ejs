@@ -44,8 +44,9 @@
             <p>You can also generate more ads by visiting a website where you can decide if you like
                 <a href="<%= it.animalsAdvertiser %>">cats or dogs</a>
                 and by saying that you like <a href="<%= it.transportAdvertiser %>">planes or trains</a> or going to
-                <a href="<%= it.sportEquipmentAdvertiser %>">a sports shop.</a>
+                <a href="<%= it.sportEquipmentAdvertiser %>">a sports shop</a>.
             </p>
+            <p>To see how Product-Level TURTLEDOVE works you can visit a specially prepared <a href="<%= it.clothesAdvertiser %>">clothes shop</a>.</p>
             <iframe id="td-ad-right" class="td-demo-ad" scrolling="no" width="300" height="250">
             </iframe>
             <p>
@@ -59,7 +60,7 @@
   import { initTurtledove } from "<%= it.turtledoveHost %>/turtledove.js"
   import { ContextualBidRequest, AdPolicy, Placement } from "<%= it.adPartner %>/static/ad-network-api.js"
 
-  const adPolicy = new AdPolicy(['ship', 'train', 'car', 'bike'])
+  const adPolicy = new AdPolicy(['train', 'bike'])
 
   initTurtledove({ logs: true, productLevel: true })
   window.navigator.renderAds('td-ad-left', { '<%= it.adPartner %>': new ContextualBidRequest('planes', new Placement('left'), adPolicy) })

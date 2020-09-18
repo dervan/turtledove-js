@@ -1,5 +1,6 @@
 import eta from 'eta'
 import path from 'path'
+import { addresses } from '../config.js'
 
 const __dirname = path.resolve('./ad-network')
 
@@ -59,6 +60,7 @@ class AdPrototype {
     this.adTarget = adTarget
     this.adPath = adPath
     this.baseValue = baseValue
+    this.adPartner = addresses.adPartner
   }
 
   async generateAdHtml () {
@@ -86,10 +88,11 @@ export class ProductLevelAdPrototype extends AdPrototype {
 }
 
 export class ProductPrototype {
-  constructor (owner, product) {
+  constructor (owner, productId) {
     this.owner = owner
-    this.product = product
-    this.title = product.replace('-', ' ')
+    this.productId = productId
+    this.title = productId.replace('-', ' ')
+    this.adPartner = addresses.adPartner
   }
 
   async generateHtml () {

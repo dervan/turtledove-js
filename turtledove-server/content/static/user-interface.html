@@ -7,6 +7,8 @@
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="./static/css/normalize.css">
     <link rel="stylesheet" href="./static/css/skeleton.css">
+    <link rel="stylesheet" href="./static/css/skeleton-tabs.css">
+    <script src="./static/js/skeleton-tabs.js"></script>
     <style>
         body {
             background: #ebdcff;
@@ -32,19 +34,9 @@
             margin: 10px;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.11.0/beautify.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.11.0/beautify-css.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.11.0/beautify-html.js"></script>
 </head>
 <body>
-<script type="module">
-  import {removeEverything } from './static/js/user-interface.js'
 
-  document.getElementById('clean-button').onclick = () => {
-    removeEverything()
-    location.reload()
-  }
-</script>
 <div class="container" style="margin-top: 5%">
     <h1>TURTLEDOVE demo UI</h1>
     <p>
@@ -53,113 +45,83 @@
         novel approach to privacy in online advertising. To know more about how to explore our demo, check out
         <a href="https://github.com/dervan/turtledove-demo">README in our repo</a>.
     </p>
-    <h2>Data reset</h2>
-    <p>If you want to delete all data from demo local storage, use this button:</p>
-    <button class="button-primary" id="clean-button">Clean data</button>
-    <h2>Fetched ads</h2>
-    <p>
-        All ads fetched because of joining an interest group:
-    </p>
-    <table id="fetched-ads">
-        <thead>
-        <tr>
-            <th>Ad id</th>
-            <th>Ad</th>
-            <th>Bidding function</th>
-            <th>Interest group signals</th>
-        </tr>
-        </thead>
-    </table>
-    <script type="module">
-      import { removeAd, listAds } from './static/js/user-interface.js'
+    <ul class="tab-nav">
+      <li><a class="button active" data-pane="#ads">Fetched ads</a></li>
+      <li><a class="button" data-pane="#products">Fetched products</a></li>
+      <li><a class="button" data-pane="#winners">Winner ads</a></li>
+      <li><a class="button" data-pane="#reset">Data reset</a></li>
+    </ul>
+    <div class="tab-content">
+      <!-- RESET PANE -->
+      <div class="tab-pane" id="reset">
+        <h2>Data reset</h2>
+        <p>If you want to delete all data from demo local storage, use this button:</p>
+        <button class="button-primary" id="clean-button">Clean data</button>
+      </div>
 
-      const formatterOptions = {
-        'indent_size': '4',
-        'indent_char': ' ',
-        'max_preserve_newlines': '1',
-        'preserve_newlines': true,
-        'keep_array_indentation': false,
-        'break_chained_methods': false,
-        'indent_scripts': 'normal',
-        'brace_style': 'collapse',
-        'space_before_conditional': true,
-        'unescape_strings': false,
-        'jslint_happy': false,
-        'end_with_newline': false,
-        'wrap_line_length': '40',
-        'indent_inner_html': false,
-        'comma_first': false,
-        'e4x': false,
-        'indent_empty_lines': false
-      }
-      const table = document.getElementById('fetched-ads')
+      <!-- ADS PANE -->
+      <div class="tab-pane active" id="ads">
+      <h2>Fetched ads</h2>
+      <p> All ads fetched because of joining an interest group:</p>
+      <table id="fetched-ads">
+          <thead>
+          <tr>
+              <th>Ad id</th>
+              <th>Ad</th>
+              <th>Bidding function</th>
+              <th>Interest group signals</th>
+          </tr>
+          </thead>
+      </table>
+      </div>
+     
+      <!-- PRODUCTS PANE -->
+      <div class="tab-pane" id="products">
+      <h2>Fetched products</h2>
+      <p>This table contains all products that were fetched for some user-group. Those are valid only in Product-Level TURTLEDOVE which is a proposal described <a href="https://github.com/jonasz/product_level_turtledove">in a dedicated repository</a>.
+        Note that association with user-group may be not current but a product will still be cached here.</p>
+      <table id="products-table">
+          <thead>
+          <tr>
+              <th>Ad network</th>
+              <th>Owner</th>
+              <th>Id</th>
+              <th>Iframe</th>
+              <th>Remove</th>
+          </tr>
+          </thead>
+      </table>
+      </div> 
 
-      for (const ad of listAds()) {
-        const row = table.insertRow()
-        const groupId = row.insertCell()
-        groupId.innerHTML = `Group ID:<br/>
-                 <b>${ad.groupName}</b><br/>
-                 Ad partner: <br/>
-                 ${ad.adPartner}<br/>`
-        let adRemoveButton = document.createElement('button')
-        adRemoveButton.textContent = 'Remove'
-        adRemoveButton.onclick = () => {
-          removeAd(ad.adPartner, ad.groupName, ad.id)
-          window.location.reload()
-        }
-        groupId.appendChild(adRemoveButton)
-        const iframe = document.createElement('iframe')
-        iframe.srcdoc = ad.iframeContent
-        iframe.height = '250px'
-        iframe.width = '300px'
-        iframe.scrolling = 'no'
-        const adCell = row.insertCell()
-        adCell.appendChild(iframe)
-        const bidFunction = row.insertCell()
-        bidFunction.innerHTML = '<pre>' + js_beautify(ad.bidFunction, formatterOptions) + '</pre>'
-        const igSignals = row.insertCell()
-        igSignals.innerHTML = '<pre>' + js_beautify(JSON.stringify(ad.interestGroupSignals)) + '</pre>'
-      }
-    </script>
-
-    <h2>Shown ads</h2>
-    <p>
-        This table contains all ads that won an auction in the past, together with a price and a publisher's address.
-    </p>
-    <table id="winners-ads">
-        <thead>
-        <tr>
-            <th>Website</th>
-            <th>Price</th>
-            <th>Ad</th>
-            <th>Context signals</th>
-            <th>Time</th>
-        </tr>
-        </thead>
-    </table>
-    <script type="module">
-      import { listWinners } from './static/js/user-interface.js'
-
-      const winnersTable = document.getElementById('winners-ads')
-      for (const winner of listWinners()) {
-        const row = winnersTable.insertRow()
-        const site = row.insertCell()
-        site.innerText = winner.site
-        const price = row.insertCell()
-        price.innerText = winner.bidValue
-        const ad = row.insertCell()
-        const iframe = document.createElement('iframe')
-        iframe.srcdoc = winner.iframeContent
-        iframe.height = '250px'
-        iframe.width = '300px'
-        iframe.scrolling = 'no'
-        ad.appendChild(iframe)
-        const ctxSignals = row.insertCell()
-        ctxSignals.innerHTML = winner.contextSignals ? '<pre>' + js_beautify(JSON.stringify(winner.contextSignals)) + '</pre>' : ''
-        const time = row.insertCell()
-        time.innerHTML = winner.time
-      }
-    </script>
+      <!-- WINNERS PANE -->
+      <div class="tab-pane" id="winners">
+        <h2>Shown ads</h2>
+        <p>This table contains all ads that won an auction in the past, together with a price and a publisher's address. </p>
+        <table id="winners-ads">
+            <thead>
+            <tr>
+                <th>Website</th>
+                <th>Price</th>
+                <th>Ad</th>
+                <th>Context signals</th>
+                <th>Time</th>
+            </tr>
+            </thead>
+        </table>
+      </div>
+    </div>
 </div>
+<script type="module">
+  import { fillAdsTable, fillWinnersTable, fillProductsTable } from './static/js/user-interface.js'
+  import { resetStorage } from './static/js/common.js'
+
+  document.getElementById('clean-button').onclick = () => {
+    resetStorage()
+    location.reload()
+  }
+  fillAdsTable()
+  fillProductsTable()
+  fillWinnersTable()
+</script>
 </body>
 </html>
