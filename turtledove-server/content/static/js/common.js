@@ -1,8 +1,7 @@
-import { logsCountKey, logsKey, tdVersionKey, testStorageKey, winnersRegisterKey } from './storage-keys.js'
-import { removeEverything } from './user-interface.js'
+import { logsCountKey, logsKey, tdVersionKey, testStorageKey } from './storage-keys.js'
 
 export const logSeparator = '<|>'
-const turtledoveVersion = '1.1.1'
+const turtledoveVersion = '1.1.2'
 
 class Log {
   constructor (text, site) {
@@ -75,27 +74,13 @@ export function verifyVersion () {
     if (window.localStorage.getItem(logsKey) != null) {
       window.alert('Incompatible storage of TURTLEDOVE detected. Demo was reset to continue to work')
     }
-    removeEverything()
-    window.localStorage.setItem(tdVersionKey, turtledoveVersion)
+    resetStorage()
   }
 }
 
-/**
- * Saves winner in localStorage to allow browsing history of on-device auctions
- * @param winningBid
- * @param publisherSite
- */
-export function saveWinner (winningBid, publisherSite) {
-  const winners = JSON.parse(window.localStorage.getItem(winnersRegisterKey)) || []
-  winners.push({
-    bidValue: winningBid.value,
-    iframeContent: winningBid.ad.iframeContent,
-    interestGroupSignals: winningBid.ad.interestGroupSignals,
-    contextSignals: winningBid.ad.type === 'contextual' ? '' : winningBid.contextSignals,
-    site: publisherSite,
-    time: new Date().toISOString()
-  })
-  window.localStorage.setItem(winnersRegisterKey, JSON.stringify(winners))
+export function resetStorage () {
+  window.localStorage.clear()
+  window.localStorage.setItem(tdVersionKey, turtledoveVersion)
 }
 
 /**
@@ -104,4 +89,17 @@ export function saveWinner (winningBid, publisherSite) {
  */
 export function getInterestGroupId (interestGroup) {
   return `${interestGroup.owner}_${interestGroup.name}`
+}
+
+/**
+ * Shuffles an array.
+ */
+export function shuffle (array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = array[i]
+    array[i] = array[j]
+    array[j] = tmp
+  }
+  return array
 }

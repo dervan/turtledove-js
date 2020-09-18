@@ -39,6 +39,7 @@ app.get('/turtledove-console.js', serveTemplatedJs('/content/turtledove-console.
 app.get('/store', jsEmbeddedIntoHtml('./static/js/store.js'))
 app.get('/render-ad', jsEmbeddedIntoHtml('./static/js/render-ad.js'))
 app.get('/ad-remove', serveHtml('/content/static/ad-remove.html'))
+app.get('/product-remove', serveHtml('/content/static/product-remove.html'))
 app.get('/console', serveHtml('/content/static/console.html'))
 app.get('/', serveHtml('/content/static/user-interface.html'))
 

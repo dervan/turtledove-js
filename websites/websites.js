@@ -57,7 +57,7 @@ sportEquipment.listen(ports.sportEquipmentAdvertiserPort,
 
 const clothesStore = express()
 const colors = ['blue', 'red', 'green', 'purple']
-const products = ['jackets', 'scarfs', 'hats']
+const products = ['jackets', 'scarfs', 'caps']
 
 clothesStore.get('/', async (req, res) => res.send(await getRenderedHtml('clothes.html.ejs', {
   ...addresses,

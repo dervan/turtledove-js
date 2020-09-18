@@ -10,7 +10,7 @@ class InterestGroupSignals {
 
 /**
  * Returns interest group signals - data that are used in the bidding function for a given ad prototype.
- * @param {AdPrototype} interestGroupKey
+ * @param {AdPrototype} interestGroupId
  * @returns {InterestGroupSignals}
  */
 export function computeInterestGroupSignals (adPrototype) {
@@ -21,9 +21,9 @@ export function computeInterestGroupSignals (adPrototype) {
 
 /**
  * If an ad for this interest group is specified in the database, return data necessary to ad rendering.
- * @param {string} interestGroupKey
+ * @param {string} interestGroupId
  * @returns {AdPrototype[]}
  */
-export function selectAds (interestGroupKey) {
-  return adsDb.filter(adPrototype => adPrototype.adTarget === interestGroupKey)
+export function selectAds (interestGroupId) {
+  return adsDb.filter(adPrototype => adPrototype.adTarget === interestGroupId)
 }

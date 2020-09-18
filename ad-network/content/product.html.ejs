@@ -1,6 +1,12 @@
 <html>
     <head>
-<style>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+
         a:link {
             text-decoration: inherit;
             color: inherit;
@@ -15,14 +21,30 @@
         .wrapper {
             width: 100%;
             height: 100%;
+            text-align: center;
         }
-</style>
+        h5 {
+            text-transform: capitalize;
+            text-align: center;
+        }
+        img {
+            width: 85%;
+            margin:auto;
+        }
+        .cross {
+            position: fixed;
+            top: 0;
+            right: 0;
+            color: rgba(0,0,0,0.1);
+        }
+    </style>
     </head>
     <body>
-        <a href='http://<%= it.owner + '/' + it.product %>' target="_top">
-            <div class='wrapper'>
-                <img width='100%'src='http://<%= it.owner %>/static/images/<%= it.product %>.svg'/>
-                <h5 style='text-transform: capitalize'><%= it.title %></h5>
+        <div class='cross'><a href='./product-remove?adPartner=<%= encodeURIComponent(it.adPartner) + '&owner=' + encodeURIComponent(it.owner) + '&productId=' + encodeURIComponent(it.productId) %>'>❌</a></div>
+        <a href='http://<%= it.owner + '/' + it.productId %>' target="_top">
+            <div class='wrapper' id='product'>
+                <img src='http://<%= it.owner %>/static/images/<%= it.productId %>.svg'/>
+                <h5><%= it.title %></h5>
             </div>
         </a>
     </body>

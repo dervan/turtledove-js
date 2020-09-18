@@ -5,37 +5,41 @@
     <title>TURTLEDOVE demo UI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="./static/css/normalize.css">
-    <link rel="stylesheet" href="./static/css/skeleton.css">
     <style>
         body {
+            font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
             background: rgba(0.1, 0.1, 0.1, 0.05);
         }
 
         .container {
-            margin-top: 5%;
+          margin-top: 60px;
+          margin-left: 0;
+          text-align: center;
+          padding: 0;
+          overflow:hidden;
+          font-size: small;
         }
     </style>
 </head>
 <body>
 <script type="module">
-  import { removeAd } from './static/js/user-interface.js'
+  import { removeProduct } from './static/js/user-interface.js'
   import { Logger } from './static/js/common.js'
 
   let params = (new URL(document.location)).searchParams
   const adPartner = params.get('adPartner')
-  const id = params.get('id')
+  const owner = params.get('owner')
+  const productId = params.get('productId')
   let logger = new Logger(window.location.protocol + '//' + window.location.host, true, false)
-  if (adPartner !== null && id !== null) {
-    removeAd(adPartner, id)
-    logger.log(`Remove ${adPartner} ad with id ${id}`)
+  if (adPartner !== null && owner !== null && productId !== null) {
+    removeProduct(adPartner, owner, productId)
+    logger.log(`Remove ${owner} product with id ${productId} fetched by ${adPartner}`)
   } else {
-    logger.log(`Incomplete request to remove ${adPartner} ad with id ${id}`)
+    logger.log(`Incomplete request to remove ${owner} product with id ${productId} fetched by ${adPartner}`)
   }
 </script>
 <div class="container">
-    <h1>Ad removed!</h1>
-    <p>It will not show again.</p>
+Removed!
 </div>
 </body>
 </html>

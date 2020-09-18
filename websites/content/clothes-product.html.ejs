@@ -22,10 +22,11 @@
 <body>
 <script type="module">
   import { initTurtledove, InterestGroup } from '<%= it.turtledoveHost %>/turtledove.js'
-  import {saveViewed} from './static/js/retargeting.js'
+  import { saveViewedProduct } from './static/js/retargeting.js'
 
   const offersInInterestGroup = 3
-  const defaultOffers = ['hats-red', 'hats-blue', 'scarfs-red']
+  const defaultOffers = ['caps-red', 'caps-blue', 'scarfs-red']
+
   function processOffers(offers) {
     function isFirstOccurence(value, index, self) {
       return self.indexOf(value) === index;
@@ -43,7 +44,7 @@
 
   initTurtledove({ logs: true, productLevel: true })
 
-  let allViewed = saveViewed('<%= it.product %>-<%= it.color %>')
+  let allViewed = saveViewedProduct('<%= it.product %>-<%= it.color %>')
   processOffers(allViewed)
 </script>
 
