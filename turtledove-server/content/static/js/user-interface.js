@@ -156,8 +156,8 @@ export function fillProductsTable () {
   const productsTable = document.getElementById('products-table')
   for (const product of listProducts()) {
     const row = productsTable.insertRow()
-    const adNetwork = row.insertCell()
     const owner = row.insertCell()
+    const adNetwork = row.insertCell()
     const id = row.insertCell()
     const iframeContainer = row.insertCell()
     const remove = row.insertCell()

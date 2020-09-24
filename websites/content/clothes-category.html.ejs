@@ -32,10 +32,10 @@
     <h3>Check out our <%= it.product %>!</h3>
     <div class="container">
       <% it.colors.forEach(function(color) { %>
-      <a href='./<%= it.product + '-' + color %>'>
+      <a href='./<%= color + '-' + it.product %>'>
         <div class="three columns centered">
             <h5><%= color + ' ' + it.product %></h5>
-            <img src="./static/images/<%= it.product + '-' + color %>.svg" alt="<%= it.product + ' ' + color %> image"><br>
+            <img src="./static/images/<%= color + '-' + it.product %>.svg" alt="<%= color + ' ' + it.product %> image"><br>
         </div>
       </a>
       <% }) %>

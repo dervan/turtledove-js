@@ -13,7 +13,7 @@ const storeIframeId = 'td-demo-store'
 const storeQueue = []
 let storeLoaded = false
 let logsEnabled = false
-let productLevelEnabled = false
+let productLevelEnabled = true
 
 /**
  * Adds and initializes an iframe that later is used to save TD data to localStorage.
@@ -90,15 +90,15 @@ function renderAds (iframeId, contextualBidRequests) {
  *
  * @param options - dict that allows to configure TURTLEDOVE simulation. Currently it accepts two keys:
  *                * logs: boolean - if set to true adds an turtledove icon and a log that shows last TURTLEDOVE demo actions
- *                * productLevel: boolean - if set to true enables Product-Level extension of TURTLEDOVE demo.
+ *                * productLevel: boolean - if set to false disables Product-Level extension of TURTLEDOVE demo.
  */
 export function initTurtledove (options) {
   if (options.logs) {
     logsEnabled = true
     enableLog()
   }
-  if (options.productLevel) {
-    productLevelEnabled = true
+  if (options.productLevel === false) {
+    productLevelEnabled = false
   }
   addStoreIframe()
 

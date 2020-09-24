@@ -1,6 +1,7 @@
 import eta from 'eta'
 import path from 'path'
 import { addresses } from '../config.js'
+import { ContextualAd, InterestGroupAd, ProductLevelInterestGroupAd, Product } from 'turtledove-js-api'
 
 const __dirname = path.resolve('./ad-network')
 
@@ -54,6 +55,25 @@ function rgbToString (rgb) {
   return 'rgb(' + rgb.r + ', ' + rgb.g + ',' + rgb.b + ')'
 }
 
+class InterestGroupSignals {
+  constructor (owner, name, baseValue) {
+    this.owner = owner
+    this.name = name
+    this.baseValue = baseValue
+  }
+}
+
+/**
+ * Returns interest group signals - data that are used in the bidding function for a given ad prototype.
+ * @param {AdPrototype} interestGroupId
+ * @returns {InterestGroupSignals}
+ */
+function computeInterestGroupSignals (adPrototype) {
+  const owner = adPrototype.adTarget.split('_')[0]
+  const name = adPrototype.adTarget.substring(owner.length + 1)
+  return new InterestGroupSignals(owner, name, adPrototype.baseValue)
+}
+
 class AdPrototype {
   constructor (id, adTarget, baseValue, adPath) {
     this.id = id
@@ -65,6 +85,22 @@ class AdPrototype {
 
   async generateAdHtml () {
     return await eta.renderFile(path.join(__dirname, this.adPath), this)
+  }
+
+  /**
+   * This function is converting prototype to final Ad that will be sent to browser.
+   */
+  async convertToAd (interestGroupId, bidFunctionUrl) {
+    const html = await this.generateAdHtml()
+    if (interestGroupId === undefined) {
+      return new ContextualAd(this.id, html, addresses.adPartner)
+    }
+    const signals = computeInterestGroupSignals(this)
+    if (this.productsCount === undefined) {
+      return new InterestGroupAd(this.id, interestGroupId, html, signals, bidFunctionUrl, addresses.adPartner)
+    }
+    const productsOwner = interestGroupId.split('_')[0]
+    return new ProductLevelInterestGroupAd(this.id, interestGroupId, html, signals, bidFunctionUrl, productsOwner, this.minProductsCount, this.productsCount, addresses.adPartner)
   }
 }
 
@@ -79,10 +115,11 @@ export class SimpleAdPrototype extends AdPrototype {
 }
 
 export class ProductLevelAdPrototype extends AdPrototype {
-  constructor (adTarget, productsCount, baseValue) {
+  constructor (adTarget, minProductsCount, productsCount, baseValue) {
     super(adTarget + '#PLTD', adTarget, baseValue, '/content/product-level-ad.html.ejs')
     const rgb = hsvToRgb(Math.random(), 0.3, 0.95)
     this.background = rgbToString(rgb)
+    this.minProductsCount = minProductsCount
     this.productsCount = productsCount
   }
 }
@@ -97,5 +134,9 @@ export class ProductPrototype {
 
   async generateHtml () {
     return await eta.renderFile(path.join(__dirname, '/content/product.html.ejs'), this)
+  }
+
+  async convertToProduct () {
+    return new Product(this.owner, this.productId, await this.generateHtml())
   }
 }

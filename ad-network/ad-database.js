@@ -1,5 +1,5 @@
 import { addresses } from '../config.js'
-import { SimpleAdPrototype, ProductLevelAdPrototype } from './ad-prototypes.js'
+import { SimpleAdPrototype, ProductLevelAdPrototype } from './prototypes.js'
 
 function extractHost (url) {
   return new URL(url).host
@@ -18,7 +18,7 @@ function generateAd (address, groupName, img, href, baseValue) {
 
 function generateProductLevelAd (address, groupName, productsCount, baseValue) {
   const fullName = extractHost(address) + '_' + groupName
-  return new ProductLevelAdPrototype(fullName, productsCount, baseValue)
+  return new ProductLevelAdPrototype(fullName, 1, productsCount, baseValue)
 }
 
 export const adsDb = [
