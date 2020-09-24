@@ -24,27 +24,24 @@
   import { initTurtledove, InterestGroup } from '<%= it.turtledoveHost %>/turtledove.js'
   import { saveViewedProduct } from './static/js/retargeting.js'
 
-  const offersInInterestGroup = 3
-  const defaultOffers = ['caps-red', 'caps-blue', 'scarfs-red']
+  const offersInInterestGroup = 4
+  const defaultOffers = ['red-caps', 'blue-caps', 'red-scarfs', 'blue-scarfs']
 
   function processOffers(offers) {
     function isFirstOccurence(value, index, self) {
       return self.indexOf(value) === index;
     }
-    const uniq = offers.filter(isFirstOccurence)
-    let selected
-    if (uniq.length >= offersInInterestGroup) {
-      selected = uniq.slice(0, offersInInterestGroup)
-    } else {
-      selected = defaultOffers.slice(offersInInterestGroup - uniq.length).concat(uniq)
-    }
+    const uniq = offers.concat(defaultOffers).filter(isFirstOccurence)
+    let selected = uniq.slice(0, offersInInterestGroup)
     let interestGroup = new InterestGroup(window.location.host, 'visitor', ['<%= it.adPartner %>'], selected)
     window.navigator.joinAdInterestGroup(interestGroup, 2592000)
   }
 
   initTurtledove({ logs: true, productLevel: true })
 
-  let allViewed = saveViewedProduct('<%= it.product %>-<%= it.color %>')
+  let allViewed = saveViewedProduct('<%= it.color %>-<%= it.product %>')
+
+  // processOffers implements last seen recommendation strategy. We inspect the history of items seen by the user.
   processOffers(allViewed)
 </script>
 
@@ -52,12 +49,15 @@
   <h3>Check out our <%= it.color %> <%= it.product %>!</h3>
     <div class="container">
         <h5><%= it.color %> <%= it.product %></h5>
-        <img src="./static/images/<%= it.product %>-<%= it.color %>.svg" alt="<%= it.color %> <%= it.product %> image"><br>
+        <img src="./static/images/<%= it.color %>-<%= it.product %>.svg" alt="<%= it.color %> <%= it.product %> image"><br>
     </div>
     <p>
-    <h3>
+    <h4>
       <a href="./<%= it.product %>">Return to listing</a>
-    </h3>
+    </h4>
+    <h4>
+      <a href="./">Return to main page</a>
+    </h4>
     </p>
 </div>
 </body>

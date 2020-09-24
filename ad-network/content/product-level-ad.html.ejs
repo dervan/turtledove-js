@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ad</title>
+    <title>Product-Level Ad</title>
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
     <style>
         body {
@@ -25,7 +25,6 @@
         }
 
         iframe {
-            width: <%= 280/it.productsCount - 10 %>px;
             height: 140px;
             display: inline-block;
             padding: 0;
@@ -35,6 +34,7 @@
             overflow: hidden;
             background-color: rgba(128,128, 128, 0.1); 
         }
+
         .wrapper {
             width: 280px;
             display: inline-block;
@@ -46,23 +46,19 @@
 <script>
     window.onmessage = function (messageEvent) {
         let data = messageEvent.data
-        if (data.productsCount !== <%= it.productsCount %> ) {
-            console.log("Invalid message received!")
-        } else {
-            let id = 0
-            for(const product of data.products || []) {
-                document.getElementById('product' + id).srcdoc = product || "<p>Not found</p>"
-                id++
-            }
+        let wrapper = document.getElementById('wrapper')
+        for(const product of data.products || []) {
+            const iframe = document.createElement('iframe')
+            iframe.srcdoc = product || '<p>Not found</p>'
+            iframe.style.width = (280/data.products.length - 10) + 'px'
+            iframe.scrolling = 'no'
+            wrapper.appendChild(iframe)
         }
     }
 </script>
     <div>
         <h3>Ad for <%= it.adTarget %></h3>
-        <div class='wrapper'>
-            <% for(let i=0; i < it.productsCount; i++) { %>
-                <iframe id="product<%= i %>" scrollable='no'></iframe>
-            <% } %>
+        <div class='wrapper' id='wrapper'>
         </div>
     </div>
 </body>

@@ -36,16 +36,14 @@ function storeInterestGroup (interestGroup, membershipTimeout, logger) {
 function removeInterestGroup (interestGroup, logger) {
   // Load current user-groups of user
   const allInterestGroups = JSON.parse(window.localStorage.getItem(interestGroupsStorageKey)) || {}
-  // Get its current groups of requested owner
-  const ownerGroups = allInterestGroups[interestGroup.owner] || {}
-  if (interestGroup.name in ownerGroups) {
-    logger.log('Removing known group: ' + getInterestGroupId(interestGroup))
-    ownerGroups[interestGroup.name] = interestGroup
-    delete allInterestGroups[interestGroup.owner]
+  const groupId = getInterestGroupId(interestGroup)
+  if (groupId in allInterestGroups) {
+    logger.log('Leaving known group: ' + getInterestGroupId(interestGroup))
+    delete allInterestGroups[groupId]
     // warning: not thread safe, check local storage for that case
     window.localStorage.setItem(interestGroupsStorageKey, JSON.stringify(allInterestGroups))
   } else {
-    logger.log('Trying to leave unknown group: ' + getInterestGroupId(interestGroup))
+    logger.log('Trying to leave not found group: ' + getInterestGroupId(interestGroup))
   }
 }
 
@@ -173,9 +171,9 @@ function saveProduct (owner, reader, logger) {
     const readerProducts = JSON.parse(window.localStorage.getItem(readerProdKey)) || {}
     const ownerProducts = readerProducts[owner] || {}
     if (owner in readerProducts && productId in ownerProducts) {
-      logger.log(`Refreshed existing product ${productId} from ${owner} (through partner ${reader})`)
+      logger.log(`Refreshed existing product ${productId} from ${owner} requested by a partner ${reader}`)
     } else {
-      logger.log(`Saved new product ${productId} from ${owner} (through partner ${reader})`)
+      logger.log(`Saved new product ${productId} from ${owner} requested by a partner ${reader}`)
     }
     ownerProducts[productId] = product
     readerProducts[owner] = ownerProducts
@@ -187,6 +185,9 @@ function saveProduct (owner, reader, logger) {
  * Performs a call to fetch-products. Due to demo simplicity, it is performed always after adding to a user group
  * (on the contrary to standard TURTLEDOVE, where this call will be asynchronous)
  *
+ * Currently, every product is identified by a pair (owner, productId) and is stored separately for every interest group reader.
+ * This allows the reader to process an offer before it gets served. But it's just a simple design decision and should be discussed later.
+ *
  * @param {InterestGroup} interestGroup
  * @param {Logger} logger
  */
@@ -195,7 +196,7 @@ function fetchNewProducts (interestGroup, logger) {
   for (const reader of interestGroup.readers) {
     const controller = new AbortController()
     interestGroup.products.map(productId =>
-      fetch(`${reader}/fetch-products?owner=${encodeURIComponent(interestGroup.owner)}&product=${encodeURIComponent(productId)}`, { signal: controller.signal })
+      fetch(`${reader}/fetch-product?owner=${encodeURIComponent(interestGroup.owner)}&product=${encodeURIComponent(productId)}`, { signal: controller.signal })
         .then(r => r.json())
         .then(saveProduct(interestGroup.owner, reader, logger))
         .catch(reason => logger.log(`Request to ${reader} for ${productId} failed: ${reason}`)))

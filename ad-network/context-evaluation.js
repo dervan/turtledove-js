@@ -1,5 +1,4 @@
-import { ContextualAd } from 'turtledove-js-api'
-import { SimpleAdPrototype } from './ad-prototypes.js'
+import { SimpleAdPrototype } from './prototypes.js'
 import { addresses } from '../config.js'
 
 class ContextSignals {
@@ -41,6 +40,6 @@ export async function getContextualAd (contextualBidRequest, contextSignals) {
   const isOnRight = contextualBidRequest.placement?.side === 'right'
   const isOnTransportSite = addresses.planesPublisher.includes(contextualBidRequest?.site)
   const bidValue = isOnRight ? (isOnTransportSite ? 2 : 0.15) : 0.05
-  const ctxAdParams = new SimpleAdPrototype('context_' + contextSignals.topic, `https://picsum.photos/seed/${id}/280/180`, '', bidValue)
-  return new EvaluatedContextualAd(new ContextualAd(id, await ctxAdParams.generateAdHtml(), addresses.adPartner), bidValue)
+  const ctxAdPrototype = new SimpleAdPrototype('context_' + contextSignals.topic, `https://picsum.photos/seed/${id}/280/180`, '', bidValue)
+  return new EvaluatedContextualAd(await ctxAdPrototype.convertToAd(), bidValue)
 }

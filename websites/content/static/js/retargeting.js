@@ -1,5 +1,5 @@
+const viewedKey = 'viewedOffers'
 export function saveViewedProduct (productName) {
-  const viewedKey = 'viewedOffers'
   const sizeLimit = 8
   let viewedOffers = JSON.parse(window.localStorage.getItem(viewedKey)) || []
   viewedOffers.unshift(productName)
@@ -8,4 +8,8 @@ export function saveViewedProduct (productName) {
   }
   window.localStorage.setItem(viewedKey, JSON.stringify(viewedOffers))
   return viewedOffers
+}
+
+export function readViewedProducts () {
+  return JSON.parse(window.localStorage.getItem(viewedKey)) || []
 }

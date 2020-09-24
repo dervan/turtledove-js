@@ -41,7 +41,7 @@ catOrDog.get('/dogfood', async (req, res) => res.send(await getRenderedHtml('cat
 
 catOrDog.use('/static', statics)
 catOrDog.listen(ports.animalsAdvertiserPort,
-  () => console.log(`Advertiser app listening at http://localhost:${ports.animalsAdvertiserPort}`))
+  () => console.log(`Animals advertiser app listening at http://localhost:${ports.animalsAdvertiserPort}`))
 
 const sportEquipment = express()
 sportEquipment.get('/', async (req, res) => res.send(await getRenderedHtml('sportequipment.html.ejs', addresses)))
@@ -53,7 +53,7 @@ for (const product of ['scooters', 'bikes', 'rollerblades']) {
 }
 sportEquipment.use('/static', statics)
 sportEquipment.listen(ports.sportEquipmentAdvertiserPort,
-  () => console.log(`Advertiser app listening at http://localhost:${ports.sportEquipmentAdvertiserPort}`))
+  () => console.log(`Sports advertiser app listening at http://localhost:${ports.sportEquipmentAdvertiserPort}`))
 
 const clothesStore = express()
 const colors = ['blue', 'red', 'green', 'purple']
@@ -70,7 +70,7 @@ for (const product of products) {
     colors: colors
   })))
   for (const color of colors) {
-    clothesStore.get('/' + product + '-' + color, async (req, res) => res.send(await getRenderedHtml('clothes-product.html.ejs', {
+    clothesStore.get('/' + color + '-' + product, async (req, res) => res.send(await getRenderedHtml('clothes-product.html.ejs', {
       ...addresses,
       color: color,
       product: product
@@ -78,5 +78,6 @@ for (const product of products) {
   }
 }
 clothesStore.use('/static', statics)
+clothesStore.get('/clear', (req, res) => res.send('<html><script>window.localStorage.clear()</scrip></html>'))
 clothesStore.listen(ports.clothesAdvertiserPort,
-  () => console.log(`Advertiser app listening at http://localhost:${ports.clothesAdvertiserPort}`))
+  () => console.log(`Clothes advertiser app listening at http://localhost:${ports.clothesAdvertiserPort}`))

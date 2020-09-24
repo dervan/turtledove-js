@@ -17,6 +17,9 @@
         img {
             width: 60%;
         }
+        #tags {
+          font-family: monospace;
+        }
     </style
 </head>
 
@@ -33,19 +36,27 @@
         <div class="one-third column centered">
           <a href="./<%= product %>">
                 <h3><%= product %></h3>
-                <img src="./static/images/<%= product %>-blue.svg" alt="<%= product %>">
+                <img src="./static/images/blue-<%= product %>.svg" alt="<%= product %>">
             </a>
         </div>
         <% }) %>
         <div class="twelve columns">
             <p>
-              This website is a dummy <b>advertiser</b> that is doing a simple retargeting based on Product-Level TURTLEDOVE.
-                Every time someone enters an offer site the list of last seen offers in first-party storage is updated and on its base offers for InterestGroup are calculated.
+              We leverage <b>Product-Level TURTLEDOVE</b> to implement last seen recommender on our ads.
+              Every time you enter an offer site, the list of last seen offers in our first-party storage is updated and on its base offers for InterestGroup are selected.
+              Try taking a look at various products on our page, and each time check how our ad changes. Remember, that we don't have any information about your preferences from TURTLEDOVE, so even if you remove an ad or a particular product we may still add it again on the next visit. If you want to reset our internal first-party storage use the button below.
+            </p>
+            <p>
+              Content of our storage: <p id='tags'></p>
+              <button onclick='window.localStorage.clear();window.location.reload()'>Reset our data</button>
+            </p>
+            <p>
+              To get better understanding of Product-Level TURTLEDOVE visit <a href="https://github.com/jonasz/product_level_turtledove"> our repository</a>.
             </p>
             <p>If you want to choose between trains and plains you should check out
                 <a href="<%= it.transportAdvertiser %>">this website</a>. Or if you'd like to choose between cats and
                 dogs you have to check out <a href="<%= it.animalsAdvertiser %>"> another site</a>.
-                Would you like to see some product-level ads? Visit <a href="<%= it.planesPublisher %>">a website about planes</a>.
+                Would you like to see some ads? Visit <a href="<%= it.planesPublisher %>">a website about planes</a> or <a href="<%= it.animalsPublisher %>"> a website abut animals</a>.
             </p>
             <p>
                 To check out more details about the state of TURTLEDOVE simulation on your browser you can visit its
@@ -54,5 +65,9 @@
         </div>
     </div>
 </div>
+  <script type="module">
+  import { readViewedProducts } from './static/js/retargeting.js'
+  document.getElementById('tags').innerHTML = JSON.stringify(readViewedProducts())
+  </script>
 </body>
 </html>

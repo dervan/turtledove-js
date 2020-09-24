@@ -2,8 +2,6 @@ import { Logger, shuffle, testLocalStorageAvailability } from './common.js'
 import { fetchedAdsStorageKeyPrefix, fetchedProductsStorageKeyPrefix, interestGroupsStorageKey, winnersRegisterKey } from './storage-keys.js'
 import { Ad } from 'https://unpkg.com/turtledove-js-api@1.1.0/classes.js'
 
-const contextualBidTimeout = 500
-
 class Bid {
   constructor (ad, contextSignals, interestGroupSignals, bidValue) {
     this.ad = ad
@@ -13,6 +11,7 @@ class Bid {
   }
 }
 
+const contextualBidTimeout = 500
 const NO_AD = new Ad('no-ad', '<html><body><h1>NO AD</h1><p>TURTLEDOVE cannot select any ad for you.</p></body></html>', 'none', 'none')
 const EMPTY_BID = new Bid(NO_AD, {}, {}, 0)
 
@@ -58,37 +57,37 @@ function renderAd (ad, products) {
   document.body.appendChild(iframe)
   document.body.appendChild(about)
   if (products !== null) {
+    // Of course in PLTD creative construction will differ a lot: https://github.com/jonasz/product_level_turtledove#creative-construction
     iframe.onload = () => {
       iframe.contentWindow.postMessage({ productsCount: products.length, products: products.map(p => p?.iframeContent) }, '*')
     }
   }
 }
 
+function getInterestGroup (ad) {
+  const interestGroups = JSON.parse(window.localStorage.getItem(interestGroupsStorageKey)) || {}
+  return interestGroups[ad.groupName]
+}
+
 /**
  * Loads from localStorage products associated with given interest group.
- * @param {string} groupName - full name of interest group
- * @param {string} productsOwner - name of source for products associated with this interest group.
+ * @param {Ad} ad - ad that needs products
  *
  * @returns {Product[]} shuffled array of products
  */
-function readProductsForInterestGroup (groupName, productsOwner, adPartner) {
+function readProductsForAd (ad) {
+  const productIds = getInterestGroup(ad).products || []
+  const partnerProducts = JSON.parse(window.localStorage.getItem(fetchedProductsStorageKeyPrefix + ad.adPartner)) || {}
+  const ownerProducts = partnerProducts[ad.productsOwner]
+
   const products = []
-  const interestGroups = JSON.parse(window.localStorage.getItem(interestGroupsStorageKey)) || {}
-  const interestGroup = interestGroups[groupName]
-  const productIds = interestGroup.products || []
-  const partnerProducts = JSON.parse(window.localStorage.getItem(fetchedProductsStorageKeyPrefix + adPartner)) || {}
-  const ownerProducts = partnerProducts[productsOwner]
   for (const productId of productIds) {
     const product = ownerProducts[productId]
     if (product !== undefined) {
       products.push(product)
-    } else {
-      // If product was removed by user or just error during downloadnig occured it is possible that there is no such product.
-      const availableProducts = Object.values(ownerProducts)
-      products.push(availableProducts[Math.floor(Math.random() * availableProducts.length)])
     }
   }
-  return shuffle(products)
+  return shuffle(products).slice(0, ad.productsCount)
 }
 
 /**
@@ -154,15 +153,24 @@ function selectBest (contextBidResponse, fetchedAds, logger) {
   }
   for (const ad of fetchedAds) {
     /* eslint no-new-func: 0 */
-    const biddingFunction = new Function('ctxSig', 'igSig', 'let _bidFunc=' + ad.bidFunction + '; return _bidFunc(ctxSig, igSig);')
-    const bidValue = biddingFunction(contextSignals, ad.interestGroupSignals)
     const adDescription = getAdDescription(ad)
-    logger.log(`Consider ${adDescription}. Value: ${bidValue}$`)
-    if (bidValue > bestBid.value) {
-      bestBid = new Bid(ad, contextSignals, ad.interestGroupSignals, bidValue)
+    if (ad.minProductsCount === undefined || canProvideProducts(ad)) {
+      const biddingFunction = new Function('ctxSig', 'igSig', 'let _bidFunc=' + ad.bidFunction + '; return _bidFunc(ctxSig, igSig);')
+      const bidValue = biddingFunction(contextSignals, ad.interestGroupSignals)
+      logger.log(`Consider ${adDescription}. Value: ${bidValue}$`)
+      if (bidValue > bestBid.value) {
+        bestBid = new Bid(ad, contextSignals, ad.interestGroupSignals, bidValue)
+      }
+    } else {
+      logger.log(`Missing products for ${adDescription}. Skipping.`)
     }
   }
   return bestBid
+}
+
+function canProvideProducts (ad) {
+  const products = readProductsForAd(ad)
+  return products.length >= ad.minProductsCount
 }
 
 /**
@@ -254,14 +262,17 @@ window.onmessage = async function (messageEvent) {
   const winningBid = await performOnDeviceAuction(bidRequests, renderingRequest.productLevelEnabled, logger, messageEvent.origin)
   if (winningBid != null) {
     const ad = winningBid.ad
-    const adDescription = getAdDescription(ad)
-    logger.log(`Winner: ${adDescription}.`)
     let products
     if (ad?.productsCount !== undefined) {
-      products = readProductsForInterestGroup(ad.groupName, ad.productsOwner, ad.adPartner)
+      products = readProductsForAd(ad)
     } else {
       products = null
     }
+    let winnerDescription = getAdDescription(ad)
+    if (products !== null) {
+      winnerDescription += ' (with injected offers [' + products.map(p => p.productId) + '])'
+    }
+    logger.log(`Winner: ${winnerDescription}.`)
     saveWinner(winningBid, products, site)
     renderAd(ad, products)
   }
