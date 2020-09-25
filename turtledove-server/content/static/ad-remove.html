@@ -21,6 +21,7 @@
 <script type="module">
   import { removeAd } from './static/js/user-interface.js'
   import { Logger } from './static/js/common.js'
+  import { adRemovalNotifiedKey } from './static/js/storage-keys.js'
 
   let params = (new URL(document.location)).searchParams
   const adPartner = params.get('adPartner')
@@ -31,6 +32,10 @@
     logger.log(`Remove ${adPartner} ad with id ${id}`)
   } else {
     logger.log(`Incomplete request to remove ${adPartner} ad with id ${id}`)
+  }
+  if (window.localStorage.getItem(adRemovalNotifiedKey) !== 'true') {
+    window.localStorage.setItem(adRemovalNotifiedKey, 'true')
+    alert("You've removed an ad. Note, that it was only removed from the TURTLEDOVE system, not blocked - so it may appear back after a visit on the advertiser's page")
   }
 </script>
 <div class="container">

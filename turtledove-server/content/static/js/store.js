@@ -193,6 +193,9 @@ function saveProduct (owner, reader, logger) {
  */
 function fetchNewProducts (interestGroup, logger) {
   const timeout = 5000
+  if (interestGroup.products === undefined) {
+    return
+  }
   for (const reader of interestGroup.readers) {
     const controller = new AbortController()
     interestGroup.products.map(productId =>
