@@ -1,7 +1,7 @@
 import { logsCountKey, logsKey, tdVersionKey, testStorageKey } from './storage-keys.js'
 
 export const logSeparator = '<|>'
-const turtledoveVersion = '1.1.2'
+const turtledoveVersion = '1.1.3'
 
 class Log {
   constructor (text, site) {

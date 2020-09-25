@@ -22,7 +22,7 @@ const EMPTY_BID = new Bid(NO_AD, {}, {}, 0)
  * @param {Ad} ad - an ad to be rendered in created in iframe
  * @param {Product[]} [products] - if provided ad is product-level it should contain list of products for ad.
  */
-function renderAd (ad, products) {
+function renderAd (ad, products, logger) {
   const iframe = document.createElement('iframe')
   iframe.srcdoc = ad.iframeContent
   iframe.height = 250
@@ -57,6 +57,7 @@ function renderAd (ad, products) {
   document.body.appendChild(iframe)
   document.body.appendChild(about)
   if (products !== null) {
+    logger.log(`Browser supervises creative ${ad.id} contstruction. Injected offers: [' ${products.map(p => p.productId)} '])`)
     // Of course in PLTD creative construction will differ a lot: https://github.com/jonasz/product_level_turtledove#creative-construction
     iframe.onload = () => {
       iframe.contentWindow.postMessage({ productsCount: products.length, products: products.map(p => p?.iframeContent) }, '*')
@@ -268,13 +269,10 @@ window.onmessage = async function (messageEvent) {
     } else {
       products = null
     }
-    let winnerDescription = getAdDescription(ad)
-    if (products !== null) {
-      winnerDescription += ' (with injected offers [' + products.map(p => p.productId) + '])'
-    }
+    const winnerDescription = getAdDescription(ad)
     logger.log(`Winner: ${winnerDescription}.`)
     saveWinner(winningBid, products, site)
-    renderAd(ad, products)
+    renderAd(ad, products, logger)
   }
   logger.save()
 }

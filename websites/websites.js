@@ -78,6 +78,5 @@ for (const product of products) {
   }
 }
 clothesStore.use('/static', statics)
-clothesStore.get('/clear', (req, res) => res.send('<html><script>window.localStorage.clear()</scrip></html>'))
 clothesStore.listen(ports.clothesAdvertiserPort,
   () => console.log(`Clothes advertiser app listening at http://localhost:${ports.clothesAdvertiserPort}`))
