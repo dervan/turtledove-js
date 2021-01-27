@@ -45,7 +45,7 @@ export function listProducts () {
     const partnerProductsMap = JSON.parse(window.localStorage.getItem(partnerProductsKey)) || {}
     for (const ownerProducts of Object.values(partnerProductsMap)) {
       for (const product of Object.values(ownerProducts)) {
-        product.adNetwork = adPartner
+        product.adPartner = adPartner
         products.push(product)
       }
     }
@@ -157,11 +157,11 @@ export function fillProductsTable () {
   for (const product of listProducts()) {
     const row = productsTable.insertRow()
     const owner = row.insertCell()
-    const adNetwork = row.insertCell()
+    const adPartner = row.insertCell()
     const id = row.insertCell()
     const iframeContainer = row.insertCell()
     const remove = row.insertCell()
-    adNetwork.innerText = product.adNetwork
+    adPartner.innerText = product.adPartner
     owner.innerText = product.owner
     id.innerText = product.productId
     const iframe = document.createElement('iframe')
@@ -173,7 +173,7 @@ export function fillProductsTable () {
     const adRemoveButton = document.createElement('button')
     adRemoveButton.textContent = 'Remove'
     adRemoveButton.onclick = () => {
-      removeProduct(product.adNetwork, product.owner, product.productId)
+      removeProduct(product.adPartner, product.owner, product.productId)
       productsTable.deleteRow(row.rowIndex)
     }
     remove.appendChild(adRemoveButton)
