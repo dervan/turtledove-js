@@ -1,4 +1,7 @@
-# Goal
+# This repository is archived
+Now, as [FLEDGE](https://github.com/WICG/turtledove/blob/main/FLEDGE.md) experiment is live, we don't need to simulate TURTLEDOVE.  Additionally, with shared storage partitioning based on the toplevel site, the proposed demo does not work like expected. Because of that, there is no need for keeping this repository alive.
+
+# Goal 
 This repository contains an implementation of TURTLEDOVE (https://github.com/WICG/turtledove). We aim to provide a solution that will be so similar to the final standard, that it could be a drop-in replacement of it. Until the proposal is implemented in browsers you can take advantage of this project to override proposed Navigator object's methods and use it the same way you would use the original TURTLEDOVE. As we can't modify browser code by itself, our implementation is based on existing technologies: _localStorage_ used by embedded _iframes_ and communicating with the main website by _postMessages_. This way all data is stored locally inside a browser and only the script serving domain has access to the private data.
 
 Alongside the core code, we implemented a few sample websites. Everything is currently available on the Internet, so you can play with our demo without worrying about its deployment. The functionality of the core scripts is not limited to a few presented pages - everyone can write such a sample, one just needs some dummy ad network, an advertiser that will put that ad network in the `readers` field, and a publisher that is 'integrated' with the very same ad network.
